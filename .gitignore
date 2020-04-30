@@ -29,3 +29,7 @@ yarn-error.log*
 
 # vim
 *.swp
+
+# lock files
+package-lock.json
+yarn.lock
