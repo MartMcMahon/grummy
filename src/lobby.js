@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import firebase from "./firebase";
+import { useAuth } from "./useAuth";
 import { useGameObject } from "./gameObject";
 import MessagesContent from "./messages/messagesContent";
 
@@ -26,15 +27,17 @@ const Lobby = props => {
   let [userList, setUserList] = useState([]);
   let gameId = useGameObject();
 
+  let userId = useAuth();
+
   useEffect(() => {
     const auth = firebase.auth();
     auth.signInAnonymously();
     console.log('runnging setTimeout');
-  });
+  }, []);
 
   useEffect(() => {
     console.log("id", gameId);
-  });
+  }, []);
 
   useEffect(() => {
     firebase
