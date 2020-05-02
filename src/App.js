@@ -15,9 +15,9 @@ function App() {
   const getRoute = route => {
     switch (route) {
       case "/":
-        return <Lobby setRoute={setRoute} />;
+        return <Lobby userId={userId} setRoute={setRoute} />;
       case "game":
-        return <CardArea />;
+        return <CardArea userId={userId} setRoute={setRoute} />;
       default:
         return <div>ya fucked up.</div>;
     }
