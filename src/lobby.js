@@ -43,17 +43,17 @@ const Lobby = props => {
       <div className="player-area">
         <div>
           {userList.map(user => {
-            return <div>{user.id}</div>;
+            return <div>{user.name}</div>;
           })}
         </div>
       </div>
-        <div className="ready-button">
+        <div className="start-button">
           <button
             onClick={e => {
-              console.log(e, "ready!");
+              props.setRoute("game");
             }}
           >
-            ready</button>
+            start</button>
           </div>
 
       <div className="lobby-message-area">

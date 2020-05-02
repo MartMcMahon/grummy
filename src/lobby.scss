@@ -14,4 +14,13 @@
   .lobby-message-area {
     min-width: 300px;
   }
+
+  .start-button {
+    button {
+      background: transparent;
+      cursor: pointer;
+      font-size: 32px;
+      margin: 15px 100px;
+    }
+  }
 }
