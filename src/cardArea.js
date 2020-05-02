@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import firebase from "./firebase";
 import { Card, Deck } from "./cards";
-import axios from "axios";
+import querystring from "querystring";
+
+import { useAuth } from "./useAuth";
 
 const api = "http://localhost:6969";
 
@@ -17,6 +20,8 @@ const CardArea = props => {
   let [discard, setDiscard] = useState([]);
 
   let [output, setOutput] = useState("");
+
+  let [userId] = useAuth();
 
   useEffect(() => {
     firebase
@@ -97,8 +102,10 @@ const CardArea = props => {
       <div
         className="deck"
         onClick={e => {
-          axios.get(`${api}/draw?UUID=${window.localStorage.getItem("UUID")}`).then(res => {
+          axios.get(`${api}/draw`, querystring.stringify({userId})).then(res => {
+            console.log(res);
             const card = new Card(res.data.card);
+            console.log(card);
             setHand([...hand, card]);
             setOutput("you drew " + card.toString());
           });
