@@ -97,7 +97,7 @@ const CardArea = props => {
       <div
         className="deck"
         onClick={e => {
-          axios.get(`${api}/draw`).then(res => {
+          axios.get(`${api}/draw?UUID=${window.localStorage.getItem("UUID")}`).then(res => {
             const card = new Card(res.data.card);
             setHand([...hand, card]);
             setOutput("you drew " + card.toString());
