@@ -104,7 +104,7 @@ const CardArea = props => {
         onClick={e => {
           axios.get(`${api}/draw/?userId=${userId}`).then(res => {
             console.log(res);
-            const card = new Card(res.data.card);
+            const card = new Card(res.data.card.suit, res.data.card.value);
             console.log(card);
             setHand([...hand, card]);
             setOutput("you drew " + card.toString());
