@@ -102,7 +102,7 @@ const CardArea = props => {
       <div
         className="deck"
         onClick={e => {
-          axios.get(`${api}/draw`, querystring.stringify({userId})).then(res => {
+          axios.get(`${api}/draw/?userId=${userId}`).then(res => {
             console.log(res);
             const card = new Card(res.data.card);
             console.log(card);
