@@ -8,31 +8,46 @@ const api = "http://localhost:6969";
 
 const CardArea = props => {
   let [gameId, setGameId] = useState("0");
-  let [gameData, setGameData] = useState({});
-  let [turnCount, setTurnCount] = useState(0);
-  let [currentTurn, setCurrentTurn] = useState(0);
+  // let [gameData, setGameData] = useState({});
+  // let [turnCount, setTurnCount] = useState(0);
+  // let [currentTurn, setCurrentTurn] = useState(0);
 
   let [hand, setHand] = useState([]);
   let [selected, setSelected] = useState([]);
   let [played, setPlayed] = useState([]);
   let [discard, setDiscard] = useState([]);
+  let [table, setTable] = useState([[], [], [], []]);
 
   let [output, setOutput] = useState("");
 
   let userId = props.userId;
 
   useEffect(() => {
-    axios.get(`${api}/game_status`).then(res => {
-      console.log("cool", res.data.id);
-      setGameId(res.data.id);
-    });
+    axios
+      .get(`${api}/game_status`)
+      .then(res => {
+        console.log("cool", res.data.id);
+        setGameId(res.data.id);
+      })
+      .then(() => {
+        return axios.put(`${api}/register_player?userId=${userId}`);
+      })
+      .then(chair => {
+        console.log("chair", chair);
+      });
   }, [gameId]);
 
   useEffect(() => {
-    console.log('gameId', gameId);
-    console.log('userId', userId);
-    console.log('getting hand');
-  }, []);
+    axios.get(`${api}/table`).then(res => {
+      setTable(res);
+    });
+  }, [table]);
+
+  useEffect(() => {
+    console.log("gameId", gameId);
+    console.log("userId", userId);
+    console.log("table", table);
+  }, [gameId]);
 
   return (
     <div className="card-area">
@@ -46,21 +61,25 @@ const CardArea = props => {
             console.log("expand");
           }}
         >
-          {hand.map(card => {
-            return card.render();
-          })}
+          cards player 1{/* {table[1].map(card => { */}
+          {/*   return card.render(); */}
+          {/* })} */}
         </div>
         <div
           className="opp opp-center"
           style={{ border: "1px dotted darkgreen" }}
         >
-          cards
+          cards player 2{/* {table[2].map(card => { */}
+          {/*   return card.render(); */}
+          {/* })} */}
         </div>
         <div
           className="opp opp-right"
           style={{ border: "1px dotted darkblue" }}
         >
-          cards
+          cards player 2{/* {table[3].map(card => { */}
+          {/*   return card.render(); */}
+          {/* })} */}
         </div>
       </div>
 
@@ -68,11 +87,8 @@ const CardArea = props => {
         className="deck"
         onClick={e => {
           axios.get(`${api}/draw/?userId=${userId}`).then(res => {
-            console.log(res);
-            const card = new Card(res.data.card.suit, res.data.card.value);
-            console.log(card);
-            setHand([...hand, card]);
-            setOutput("you drew " + card.toString());
+            const newHand = res.data.hand.map(base_card => new Card(base_card));
+            setHand(newHand);
           });
         }}
       >

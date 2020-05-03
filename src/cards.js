@@ -16,8 +16,20 @@ export class Card {
   suit;
 
   constructor(suit, value) {
-    this.suit = suit;
-    this.value = value + 1;
+    if (value===undefined) {
+      if (Array.isArray(suit)) {
+        this.suit = suit[0];
+        this.value = suit[1];
+      } else if (!Number.isInteger(suit)) {
+        this.suit = suit.suit;
+        this.value = suit.value;
+      } else {
+        throw TypeError("invalid card");
+      }
+    } else {
+      this.suit = suit;
+      this.value = value + 1;
+    }
   }
 
   toString() {
