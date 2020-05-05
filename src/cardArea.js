@@ -12,6 +12,7 @@ const CardArea = props => {
   // let [turnCount, setTurnCount] = useState(0);
   // let [currentTurn, setCurrentTurn] = useState(0);
 
+  let [chair, setChair] = useState(0);
   let [hand, setHand] = useState([]);
   let [selected, setSelected] = useState([]);
   let [played, setPlayed] = useState([]);
@@ -22,31 +23,27 @@ const CardArea = props => {
 
   let userId = props.userId;
 
+  // // interval for pinging the server
+  // setInterval(() => {
+  //   const game_state = axios.get(`${api}/state`).then(res => {
+  //     console.log("state request", res);
+  //     setTable(res.data.table);
+  //   });
+  // }, 1000);
+
   useEffect(() => {
-    axios
+    const chair = axios
       .get(`${api}/game_status`)
       .then(res => {
         console.log("cool", res.data.id);
         setGameId(res.data.id);
       })
       .then(() => {
-        return axios.put(`${api}/register_player?userId=${userId}`);
-      })
-      .then(chair => {
-        console.log("chair", chair);
+        axios.put(`${api}/register_player?userId=${userId}`).then(res => {
+          console.log(res);
+          setChair(res.data.chair);
+        });
       });
-  }, [gameId]);
-
-  // useEffect(() => {
-  //   axios.get(`${api}/table`).then(res => {
-  //     setTable(res);
-  //   });
-  // }, [table]);
-
-  useEffect(() => {
-    console.log("gameId", gameId);
-    console.log("userId", userId);
-    console.log("table", table);
   }, [gameId]);
 
   const playCards = e => {
@@ -55,7 +52,7 @@ const CardArea = props => {
       selected.forEach(i => {
         cards.push(hand[i]);
       });
-      console.log('pushing ', JSON.stringify(cards));
+      console.log("pushing ", JSON.stringify(cards));
 
       axios
         .put(
@@ -63,11 +60,24 @@ const CardArea = props => {
         )
         .then(res => {
           console.log("play res", res);
+          setHand(res.data.new_hand.map(card => new Card(card)));
+          const newTable = res.data.table.map(player_cards => {
+            return player_cards.map(card => new Card(card));
+          });
+          setTable(newTable);
+          // setTable(res.data.table.map(card => new Card(card)));
         });
       // get new hand and new play area from resopnse
       setSelected([]);
     }
   };
+
+  // const removeFromHand = cards => {
+  //   const new_hand = hand.filter(
+  //     card => !cards.includes(card)
+  //   )
+  //   setHand(new_hand);
+  // }
 
   return (
     <div className="card-area">
@@ -97,7 +107,7 @@ const CardArea = props => {
           className="opp opp-right"
           style={{ border: "1px dotted darkblue" }}
         >
-          cards player 2{/* {table[3].map(card => { */}
+          cards player 3{/* {table[3].map(card => { */}
           {/*   return card.render(); */}
           {/* })} */}
         </div>
@@ -126,7 +136,7 @@ const CardArea = props => {
 
       <div className="player-area">
         <div className="player" onClick={playCards}>
-          {played.map(card => {
+          {table[chair].map(card => {
             return card.render();
           })}
         </div>
