@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import firebase from "./firebase";
 
-export const useAuth = () => {
+export const useAuth = firebase => {
   let [user, setUser] = useState("");
 
   useEffect(() => {
@@ -12,6 +11,10 @@ export const useAuth = () => {
     // unsubscribe to the listener when unmounting
     return () => unsubscribe();
   });
+
+  useEffect(() => {
+    firebase.auth().signInAnonymously();
+  }, []);
 
   return user;
 };
