@@ -20,13 +20,11 @@ body {
   .opp {
     border: 1px dotted black;
     display: inline-block;
-    max-height: 69px;
-    max-width: 85px;
     overflow: hidden;
     padding: 4px;
 
-    height: 42px;
-    width: 28%;
+    height: fit-content;
+    width: fit-content;
 
 
     .hand-card {

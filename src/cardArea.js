@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import querystring from "querystring";
-import firebase from "./firebase";
-import { Card, Deck } from "./cards";
 import { Card } from "./cards";
 
 const api_root = "http://localhost:6969";
 
 const CardArea = props => {
   let [gameId, setGameId] = useState("0");
-  // let [gameData, setGameData] = useState({});
-  // let [turnCount, setTurnCount] = useState(0);
-  // let [currentTurn, setCurrentTurn] = useState(0);
-
   let [chair, setChair] = useState(0);
   let [hand, setHand] = useState([]);
   let [selected, setSelected] = useState([]);
-  let [played, setPlayed] = useState([]);
   let [discard, setDiscard] = useState([]);
   let [table, setTable] = useState([[], [], [], []]);
-
   let [output, setOutput] = useState("");
 
   let userId = props.userId;
@@ -42,7 +33,7 @@ const CardArea = props => {
   }, [chair, userId]);
 
   useEffect(() => {
-    const chair = axios
+    axios
       .get(`${api_root}/game_status`)
       .then(res => {
         console.log("cool", res.data.id);
@@ -54,7 +45,7 @@ const CardArea = props => {
           setChair(res.data.chair);
         });
       });
-  }, [gameId]);
+  }, [gameId, userId]);
 
   const playCards = e => {
     if (selected.length > 0) {
