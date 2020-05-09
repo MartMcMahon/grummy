@@ -17,7 +17,7 @@ const CardArea = props => {
 
   useEffect(() => {
     const game_pinger = setInterval(() => {
-      axios.get(`${api_root}/state?${userId}`).then(res => {
+      axios.get(`${api_root}/state?userId=${userId}`).then(res => {
         console.log("state request", res);
         const new_table = res.data.table.map((played_cards, i) =>
           res.data.table[(i + chair) % 4].map(card => new Card(card))
@@ -25,6 +25,7 @@ const CardArea = props => {
         console.log("chair", chair);
         console.log("new table", new_table);
         setTable(new_table);
+        setHand(res.data.hand.map(card => new Card(card)));
       });
     }, 2000);
     return () => {
@@ -49,21 +50,21 @@ const CardArea = props => {
 
   const playCards = e => {
     if (selected.length > 0) {
-      const cards = [];
-      selected.forEach(i => {
-        cards.push(hand[i]);
-      });
-      console.log("pushing ", JSON.stringify(cards));
+      // const cards = [];
+      // selected.forEach(i => {
+      //   cards.push(hand[i]);
+      // });
+      // console.log("pushing ", JSON.stringify(cards));
 
       axios
         .put(
           `${api_root}/play_cards?userId=${userId}&cards=${JSON.stringify(
-            cards
+            selected
           )}`
         )
         .then(res => {
           console.log("play res", res);
-          setHand(res.data.new_hand.map(card => new Card(card)));
+          // setHand(res.data.new_hand.map(card => new Card(card)));
           // res.data.table.map(player_cards => {
           //   return player_cards.map(card => new Card(card));
           // });
