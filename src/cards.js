@@ -24,12 +24,17 @@ export class Card {
         this.suit = suit.suit;
         this.value = suit.value;
       } else {
+        console.log({suit, value});
         throw TypeError("invalid card");
       }
     } else {
       this.suit = suit;
       this.value = value + 1;
     }
+  }
+
+  is(other_card) {
+    return (this.suit === other_card.suit && this.value === other_card.value);
   }
 
   toString() {
