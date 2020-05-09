@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import querystring from "querystring";
+import api_root from "./api";
 import firebase from "./firebase";
 import { Card, Deck } from "./cards";
-import querystring from "querystring";
-
-const api = "http://localhost:6969";
 
 const CardArea = props => {
   let [gameId, setGameId] = useState("0");
@@ -25,7 +24,7 @@ const CardArea = props => {
 
   // // interval for pinging the server
   // setInterval(() => {
-  //   const game_state = axios.get(`${api}/state`).then(res => {
+  //   const game_state = axios.get(`${api_root}/state`).then(res => {
   //     console.log("state request", res);
   //     setTable(res.data.table);
   //   });
@@ -33,13 +32,13 @@ const CardArea = props => {
 
   useEffect(() => {
     const chair = axios
-      .get(`${api}/game_status`)
+      .get(`${api_root}/game_status`)
       .then(res => {
         console.log("cool", res.data.id);
         setGameId(res.data.id);
       })
       .then(() => {
-        axios.put(`${api}/register_player?userId=${userId}`).then(res => {
+        axios.put(`${api_root}/register_player?userId=${userId}`).then(res => {
           console.log(res);
           setChair(res.data.chair);
         });
@@ -56,7 +55,9 @@ const CardArea = props => {
 
       axios
         .put(
-          `${api}/play_cards?userId=${userId}&cards=${JSON.stringify(cards)}`
+          `${api_root}/play_cards?userId=${userId}&cards=${JSON.stringify(
+            cards
+          )}`
         )
         .then(res => {
           console.log("play res", res);
@@ -116,7 +117,7 @@ const CardArea = props => {
       <div
         className="deck"
         onClick={e => {
-          axios.get(`${api}/draw/?userId=${userId}`).then(res => {
+          axios.get(`${api_root}/draw/?userId=${userId}`).then(res => {
             const newHand = res.data.hand.map(base_card => new Card(base_card));
             setHand(newHand);
           });
