@@ -17,4 +17,5 @@ export const useAuth = firebase => {
   }, []);
 
   return user;
-};
+}
+;
