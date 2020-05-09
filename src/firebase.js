@@ -15,16 +15,16 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-firebase.auth().onAuthStateChanged(user => {
-  firebase.firestore()
-    .collection("lobby")
-    .doc(user.uid)
-    .set({status:"ok", time:Date.now().toString()})
-    .then(() => {
-      console.log(`${user.uid} joined the lobby`, user);
-    })
-    .catch(err => {
-      console.errror("error joining the lobby", err);
-    });
-});
+    // firebase.auth().onAuthStateChanged(user => {
+    //   firebase.firestore()
+    //     .collection("lobby")
+    //     .doc(user.uid)
+    //     .set({status:"ok", time:Date.now().toString()})
+    //     .then(() => {
+    //       console.log(`${user.uid} joined the lobby`, user);
+    //     })
+    //     .catch(err => {
+    //       console.errror("error joining the lobby", err);
+    //     });
+    // });
 export default firebase;
