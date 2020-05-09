@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export const useAuth = firebase => {
-  let [user, setUser] = useState("");
+  let [user, setUser] = useState({uid: null});
 
   useEffect(() => {
     // listen for auth state changes
@@ -12,10 +12,5 @@ export const useAuth = firebase => {
     return () => unsubscribe;
   }, []);
 
-  useEffect(() => {
-    firebase.auth().signInAnonymously();
-  }, []);
-
   return user;
-}
-;
+};

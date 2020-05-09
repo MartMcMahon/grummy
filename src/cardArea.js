@@ -3,6 +3,7 @@ import axios from "axios";
 import querystring from "querystring";
 import firebase from "./firebase";
 import { Card, Deck } from "./cards";
+import { Card } from "./cards";
 
 const api_root = "http://localhost:6969";
 
@@ -23,13 +24,22 @@ const CardArea = props => {
 
   let userId = props.userId;
 
-  // // interval for pinging the server
-  // setInterval(() => {
-  //   const game_state = axios.get(`${api_root}/state`).then(res => {
-  //     console.log("state request", res);
-  //     setTable(res.data.table);
-  //   });
-  // }, 1000);
+  useEffect(() => {
+    const game_pinger = setInterval(() => {
+      axios.get(`${api_root}/state?${userId}`).then(res => {
+        console.log("state request", res);
+        const new_table = res.data.table.map((played_cards, i) =>
+          res.data.table[(i + chair) % 4].map(card => new Card(card))
+        );
+        console.log("chair", chair);
+        console.log("new table", new_table);
+        setTable(new_table);
+      });
+    }, 2000);
+    return () => {
+      clearInterval(game_pinger);
+    };
+  }, [chair, userId]);
 
   useEffect(() => {
     const chair = axios
@@ -63,13 +73,10 @@ const CardArea = props => {
         .then(res => {
           console.log("play res", res);
           setHand(res.data.new_hand.map(card => new Card(card)));
-          const newTable = res.data.table.map(player_cards => {
-            return player_cards.map(card => new Card(card));
-          });
-          setTable(newTable);
-          // setTable(res.data.table.map(card => new Card(card)));
+          // res.data.table.map(player_cards => {
+          //   return player_cards.map(card => new Card(card));
+          // });
         });
-      // get new hand and new play area from resopnse
       setSelected([]);
     }
   };
@@ -93,25 +100,28 @@ const CardArea = props => {
             console.log("expand");
           }}
         >
-          cards player 1{/* {table[1].map(card => { */}
-          {/*   return card.render(); */}
-          {/* })} */}
+          cards player 1
+          {table[1].map(card => {
+            return card.render();
+          })}
         </div>
         <div
           className="opp opp-center"
           style={{ border: "1px dotted darkgreen" }}
         >
-          cards player 2{/* {table[2].map(card => { */}
-          {/*   return card.render(); */}
-          {/* })} */}
+          cards player 2
+          {table[2].map(card => {
+            return card.render();
+          })}
         </div>
         <div
           className="opp opp-right"
           style={{ border: "1px dotted darkblue" }}
         >
-          cards player 3{/* {table[3].map(card => { */}
-          {/*   return card.render(); */}
-          {/* })} */}
+          cards player 3
+          {table[3].map(card => {
+            return card.render();
+          })}
         </div>
       </div>
 
@@ -138,7 +148,7 @@ const CardArea = props => {
 
       <div className="player-area">
         <div className="player" onClick={playCards}>
-          {table[chair].map(card => {
+          {table[0].map(card => {
             return card.render();
           })}
         </div>

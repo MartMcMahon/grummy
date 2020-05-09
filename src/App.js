@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CardArea from "./cardArea";
 import firebase from "./firebase";
 import MessageArea from "./messageArea";
@@ -8,15 +8,21 @@ import Lobby from "./lobby";
 import "./main.scss";
 
 function App() {
+
+  useEffect(() => {
+    firebase.auth().signInAnonymously();
+  }, []);
+
   let user = useAuth(firebase);
   let [route, setRoute] = useState("/");
 
+  console.log('user', user);
   const getRoute = route => {
     switch (route) {
       case "/":
-        return <Lobby userId={user.uid} setRoute={setRoute} />;
+        return <Lobby userId={user.uid || null} setRoute={setRoute} />;
       case "game":
-        return <CardArea userId={user.uid} setRoute={setRoute} />;
+        return <CardArea userId={user.uid||null} setRoute={setRoute} />;
       default:
         return <div>ya fucked up.</div>;
     }
