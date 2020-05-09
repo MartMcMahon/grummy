@@ -9,12 +9,15 @@ import "./main.scss";
 
 function App() {
 
-  useEffect(() => {
-    firebase.auth().signInAnonymously();
-  }, []);
-
   let user = useAuth(firebase);
   let [route, setRoute] = useState("/");
+
+  useEffect(() => {
+    let this_user;
+    while(!user) {
+      firebase.auth().signInAnonymously();
+    }
+  }, []);
 
   console.log('user', user);
   const getRoute = route => {
@@ -22,7 +25,7 @@ function App() {
       case "/":
         return <Lobby userId={user.uid || null} setRoute={setRoute} />;
       case "game":
-        return <CardArea userId={user.uid||null} setRoute={setRoute} />;
+        return <CardArea userId={(user.uid||null)} setRoute={setRoute} />;
       default:
         return <div>ya fucked up.</div>;
     }
