@@ -10,7 +10,7 @@ export const useAuth = firebase => {
     });
     // unsubscribe to the listener when unmounting
     return () => unsubscribe();
-  }, []);
+  });
 
   useEffect(() => {
     firebase.auth().signInAnonymously();
