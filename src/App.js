@@ -1,23 +1,22 @@
 import React, { useState } from "react";
-
 import CardArea from "./cardArea";
+import firebase from "./firebase";
 import MessageArea from "./messageArea";
 import { useAuth } from "./useAuth";
-
 import Lobby from "./lobby";
 
 import "./main.scss";
 
 function App() {
-  let [userId] = useAuth();
+  let user = useAuth(firebase);
   let [route, setRoute] = useState("/");
 
   const getRoute = route => {
     switch (route) {
       case "/":
-        return <Lobby userId={userId} setRoute={setRoute} />;
+        return <Lobby userId={user.uid} setRoute={setRoute} />;
       case "game":
-        return <CardArea userId={userId} setRoute={setRoute} />;
+        return <CardArea userId={user.uid} setRoute={setRoute} />;
       default:
         return <div>ya fucked up.</div>;
     }
