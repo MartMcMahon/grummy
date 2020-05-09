@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import querystring from "querystring";
-import api_root from "./api";
 import firebase from "./firebase";
 import { Card, Deck } from "./cards";
+
+const api_root = "http://localhost:6969";
 
 const CardArea = props => {
   let [gameId, setGameId] = useState("0");
