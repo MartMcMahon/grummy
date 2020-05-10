@@ -10,6 +10,7 @@ const CardArea = props => {
   let [hand, setHand] = useState([]);
   let [selected, setSelected] = useState([]);
   let [discard, setDiscard] = useState([]);
+  let [selectedDiscard, setSelectedDiscard] = useState(-1);
   let [table, setTable] = useState([[], [], [], []]);
   let [output, setOutput] = useState("");
 
@@ -26,6 +27,7 @@ const CardArea = props => {
         console.log("new table", new_table);
         setTable(new_table);
         setHand(res.data.hand.map(card => new Card(card)));
+        setDiscard(res.data.discard.map(card => new Card(card)));
       });
     }, 2000);
     return () => {
@@ -129,15 +131,44 @@ const CardArea = props => {
         <div className="draw-button">Draw</div>
       </div>
       <div
-        className="discard"
+        className="discard-area"
         onClick={e => {
-          console.log("discard");
-          console.log(discard.shift().toString());
+          if (selected.length === 1) {
+            axios
+              .put(`${api_root}/discard?userId=${userId}&index=${selected[0]}`)
+              .then(res => {
+                console.log("discard res", res);
+                setSelected([]);
+              });
+          } else if (selected.length > 1) {
+            alert("that's too many");
+          } else {
+            return true;
+          }
         }}
       >
-        &nbsp;
+        {discard.map((card, i) => {
+          return (
+            <div
+              className={`discard-card${
+                i === selectedDiscard ? " selected" : ""
+              }`}
+              onClick={e => {
+                console.log(card.suit, card.value);
+                setSelectedDiscard(i);
+              }}
+            >
+              {card.render()}
+            </div>
+          );
+        })}
       </div>
-
+      <div
+        className="discard-button"
+        onClick={e => {
+          console.log(selected);
+        }}
+      ></div>
       <div className="player-area">
         <div className="player" onClick={playCards}>
           {table[0].map(card => {

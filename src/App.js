@@ -13,11 +13,10 @@ function App() {
   let [route, setRoute] = useState("/");
 
   useEffect(() => {
-    let this_user;
     while(!user) {
       firebase.auth().signInAnonymously();
     }
-  }, []);
+  }, [user]);
 
   console.log('user', user);
   const getRoute = route => {
