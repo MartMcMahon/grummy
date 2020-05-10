@@ -20,14 +20,11 @@ body {
   .opp {
     border: 1px dotted black;
     display: inline-block;
-    max-height: 69px;
-    max-width: 85px;
     overflow: hidden;
     padding: 4px;
 
-    height: 42px;
-    width: 28%;
-
+    height: fit-content;
+    width: fit-content;
 
     .hand-card {
       @extend .card;
@@ -43,7 +40,6 @@ body {
       @extend .card;
     }
   }
-
 }
 
 .card-area {
@@ -70,16 +66,37 @@ body {
       #bad0ef 10px,
       #bad0ef 20px
     );
-    cursor: pointer;
+    cursor: grab;
     -webkit-user-select: none; /* Chrome all / Safari all */
     -moz-user-select: none; /* Firefox all */
     -ms-user-select: none; /* IE 10+ */
     user-select: none;
   }
 
-  .discard {
-    @extend .card-stack;
+  .discard-area {
     border: 2px dashed darkgrey;
+    cursor: cell;
+    display: inline-flex;
+    min-height: 52px;
+    min-width: 20px;
+    padding: 4px;
+    padding-left: 26px;
+    width: fit-content;
+
+    .discard-card {
+      .hand-card {
+        border: 1px solid black;
+        display: inline-block;
+        height: 52px;
+        margin-left: -23px;
+        width: 38px;
+      }
+    }
+    .discard-card.selected {
+      .hand-card {
+        border: 2px solid darkred;
+      }
+    }
   }
 }
 

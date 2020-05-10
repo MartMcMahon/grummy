@@ -1,38 +1,42 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import querystring from "querystring";
-import firebase from "./firebase";
-import { Card, Deck } from "./cards";
+import { Card } from "./cards";
 
 const api_root = "http://localhost:6969";
 
 const CardArea = props => {
   let [gameId, setGameId] = useState("0");
-  // let [gameData, setGameData] = useState({});
-  // let [turnCount, setTurnCount] = useState(0);
-  // let [currentTurn, setCurrentTurn] = useState(0);
-
   let [chair, setChair] = useState(0);
   let [hand, setHand] = useState([]);
   let [selected, setSelected] = useState([]);
-  let [played, setPlayed] = useState([]);
   let [discard, setDiscard] = useState([]);
+  let [selectedDiscard, setSelectedDiscard] = useState(-1);
   let [table, setTable] = useState([[], [], [], []]);
-
   let [output, setOutput] = useState("");
 
   let userId = props.userId;
 
-  // // interval for pinging the server
-  // setInterval(() => {
-  //   const game_state = axios.get(`${api_root}/state`).then(res => {
-  //     console.log("state request", res);
-  //     setTable(res.data.table);
-  //   });
-  // }, 1000);
+  useEffect(() => {
+    const game_pinger = setInterval(() => {
+      axios.get(`${api_root}/state?userId=${userId}`).then(res => {
+        console.log("state request", res);
+        const new_table = res.data.table.map((played_cards, i) =>
+          res.data.table[(i + chair) % 4].map(card => new Card(card))
+        );
+        console.log("chair", chair);
+        console.log("new table", new_table);
+        setTable(new_table);
+        setHand(res.data.hand.map(card => new Card(card)));
+        setDiscard(res.data.discard.map(card => new Card(card)));
+      });
+    }, 2000);
+    return () => {
+      clearInterval(game_pinger);
+    };
+  }, [chair, userId]);
 
   useEffect(() => {
-    const chair = axios
+    axios
       .get(`${api_root}/game_status`)
       .then(res => {
         console.log("cool", res.data.id);
@@ -44,32 +48,29 @@ const CardArea = props => {
           setChair(res.data.chair);
         });
       });
-  }, [gameId]);
+  }, [gameId, userId]);
 
   const playCards = e => {
     if (selected.length > 0) {
-      const cards = [];
-      selected.forEach(i => {
-        cards.push(hand[i]);
-      });
-      console.log("pushing ", JSON.stringify(cards));
+      // const cards = [];
+      // selected.forEach(i => {
+      //   cards.push(hand[i]);
+      // });
+      // console.log("pushing ", JSON.stringify(cards));
 
       axios
         .put(
           `${api_root}/play_cards?userId=${userId}&cards=${JSON.stringify(
-            cards
+            selected
           )}`
         )
         .then(res => {
           console.log("play res", res);
-          setHand(res.data.new_hand.map(card => new Card(card)));
-          const newTable = res.data.table.map(player_cards => {
-            return player_cards.map(card => new Card(card));
-          });
-          setTable(newTable);
-          // setTable(res.data.table.map(card => new Card(card)));
+          // setHand(res.data.new_hand.map(card => new Card(card)));
+          // res.data.table.map(player_cards => {
+          //   return player_cards.map(card => new Card(card));
+          // });
         });
-      // get new hand and new play area from resopnse
       setSelected([]);
     }
   };
@@ -93,25 +94,28 @@ const CardArea = props => {
             console.log("expand");
           }}
         >
-          cards player 1{/* {table[1].map(card => { */}
-          {/*   return card.render(); */}
-          {/* })} */}
+          cards player 1
+          {table[1].map(card => {
+            return card.render();
+          })}
         </div>
         <div
           className="opp opp-center"
           style={{ border: "1px dotted darkgreen" }}
         >
-          cards player 2{/* {table[2].map(card => { */}
-          {/*   return card.render(); */}
-          {/* })} */}
+          cards player 2
+          {table[2].map(card => {
+            return card.render();
+          })}
         </div>
         <div
           className="opp opp-right"
           style={{ border: "1px dotted darkblue" }}
         >
-          cards player 3{/* {table[3].map(card => { */}
-          {/*   return card.render(); */}
-          {/* })} */}
+          cards player 3
+          {table[3].map(card => {
+            return card.render();
+          })}
         </div>
       </div>
 
@@ -127,18 +131,47 @@ const CardArea = props => {
         <div className="draw-button">Draw</div>
       </div>
       <div
-        className="discard"
+        className="discard-area"
         onClick={e => {
-          console.log("discard");
-          console.log(discard.shift().toString());
+          if (selected.length === 1) {
+            axios
+              .put(`${api_root}/discard?userId=${userId}&index=${selected[0]}`)
+              .then(res => {
+                console.log("discard res", res);
+                setSelected([]);
+              });
+          } else if (selected.length > 1) {
+            alert("that's too many");
+          } else {
+            return true;
+          }
         }}
       >
-        &nbsp;
+        {discard.map((card, i) => {
+          return (
+            <div
+              className={`discard-card${
+                i === selectedDiscard ? " selected" : ""
+              }`}
+              onClick={e => {
+                console.log(card.suit, card.value);
+                setSelectedDiscard(i);
+              }}
+            >
+              {card.render()}
+            </div>
+          );
+        })}
       </div>
-
+      <div
+        className="discard-button"
+        onClick={e => {
+          console.log(selected);
+        }}
+      ></div>
       <div className="player-area">
         <div className="player" onClick={playCards}>
-          {table[chair].map(card => {
+          {table[0].map(card => {
             return card.render();
           })}
         </div>
