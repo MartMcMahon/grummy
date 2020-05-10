@@ -73,10 +73,28 @@ body {
     user-select: none;
   }
 
+  .select-button {
+    @extend .card-stack;
+    background: repeating-linear-gradient(
+      45deg,
+      #f8d0e5,
+      #f8d0e5 10px,
+      #efbad0 10px,
+      #efbad0 20px
+    );
+
+    border: 1px solid black;
+    cursor: pointer;
+    display: inline-block;
+    min-width: 74px;
+    width: unset;
+  }
+
   .discard-area {
     border: 2px dashed darkgrey;
     cursor: cell;
     display: inline-flex;
+    line-height: 100px;
     min-height: 52px;
     min-width: 20px;
     padding: 4px;
@@ -104,6 +122,9 @@ body {
   .hand-card {
     @extend .card;
   }
+}
+.hand-area.selected-discard {
+  cursor: s-resize;
 }
 
 @keyframes slide_chat_out {

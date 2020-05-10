@@ -13,6 +13,9 @@ const CardArea = props => {
   let [selectedDiscard, setSelectedDiscard] = useState(-1);
   let [table, setTable] = useState([[], [], [], []]);
   let [output, setOutput] = useState("");
+  let [turn, setTurn] = useState(-1);
+  let [phase, setPhase] = useState(-1);
+  let [selectButton, setSelectButton] = useState(null);
 
   let userId = props.userId;
 
@@ -28,6 +31,8 @@ const CardArea = props => {
         setTable(new_table);
         setHand(res.data.hand.map(card => new Card(card)));
         setDiscard(res.data.discard.map(card => new Card(card)));
+        setTurn(res.data.turn);
+        setPhase(res.data.phase);
       });
     }, 2000);
     return () => {
@@ -50,14 +55,18 @@ const CardArea = props => {
       });
   }, [gameId, userId]);
 
+  useEffect(() => {
+    let newOutput = "";
+    if (turn === chair) {
+      newOutput = "your turn";
+    } else {
+      newOutput = "";
+    }
+    setOutput(newOutput);
+  }, [chair, turn, phase]);
+
   const playCards = e => {
     if (selected.length > 0) {
-      // const cards = [];
-      // selected.forEach(i => {
-      //   cards.push(hand[i]);
-      // });
-      // console.log("pushing ", JSON.stringify(cards));
-
       axios
         .put(
           `${api_root}/play_cards?userId=${userId}&cards=${JSON.stringify(
@@ -66,21 +75,53 @@ const CardArea = props => {
         )
         .then(res => {
           console.log("play res", res);
-          // setHand(res.data.new_hand.map(card => new Card(card)));
-          // res.data.table.map(player_cards => {
-          //   return player_cards.map(card => new Card(card));
-          // });
         });
       setSelected([]);
     }
   };
 
-  // const removeFromHand = cards => {
-  //   const new_hand = hand.filter(
-  //     card => !cards.includes(card)
-  //   )
-  //   setHand(new_hand);
-  // }
+  useEffect(() => {
+    if (selected.length === 1) {
+      setSelectButton(
+        <div
+          className="select-button"
+          onClick={e => {
+            if (selected.length === 1) {
+              axios
+                .put(
+                  `${api_root}/discard?userId=${userId}&index=${selected[0]}`
+                )
+                .then(res => {
+                  console.log("discard res", res);
+                  setSelected([]);
+                });
+            } else if (selected.length > 1) {
+              alert("that's too many");
+            } else {
+              return true;
+            }
+          }}
+          role="button"
+        >
+          discard
+        </div>
+      );
+    } else if (selectedDiscard !== -1) {
+      setSelectButton(
+        <div
+          className="select-button"
+          onClick={e => {
+            console.log("drawing from the discard pile");
+          }}
+          role="button"
+        >
+          from discard
+        </div>
+      );
+    } else {
+      setSelectButton(null);
+    }
+  }, [selected, selectedDiscard ]);
 
   return (
     <div className="card-area">
@@ -130,23 +171,7 @@ const CardArea = props => {
       >
         <div className="draw-button">Draw</div>
       </div>
-      <div
-        className="discard-area"
-        onClick={e => {
-          if (selected.length === 1) {
-            axios
-              .put(`${api_root}/discard?userId=${userId}&index=${selected[0]}`)
-              .then(res => {
-                console.log("discard res", res);
-                setSelected([]);
-              });
-          } else if (selected.length > 1) {
-            alert("that's too many");
-          } else {
-            return true;
-          }
-        }}
-      >
+      <div className="discard-area">
         {discard.map((card, i) => {
           return (
             <div
@@ -154,8 +179,12 @@ const CardArea = props => {
                 i === selectedDiscard ? " selected" : ""
               }`}
               onClick={e => {
-                console.log(card.suit, card.value);
-                setSelectedDiscard(i);
+                setSelected([]);
+                if (i === selectedDiscard) {
+                  setSelectedDiscard(-1);
+                } else {
+                  setSelectedDiscard(i);
+                }
               }}
             >
               {card.render()}
@@ -163,12 +192,9 @@ const CardArea = props => {
           );
         })}
       </div>
-      <div
-        className="discard-button"
-        onClick={e => {
-          console.log(selected);
-        }}
-      ></div>
+
+      {selectButton}
+
       <div className="player-area">
         <div className="player" onClick={playCards}>
           {table[0].map(card => {
@@ -187,6 +213,7 @@ const CardArea = props => {
           return card.render(
             {
               onClick: e => {
+                setSelectedDiscard(-1);
                 const index = selected.indexOf(i);
                 if (index === -1) {
                   setSelected([...selected, i]);
