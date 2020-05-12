@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card } from "./cards";
 
-const api_root = "http://localhost:6969";
+let api_root = "https://grummy.mart.pizza:8080";
+if (process.env.NODE_ENV === "development") {
+  api_root = "http://localhost:6969";
+}
+
 
 const CardArea = props => {
   let [gameId, setGameId] = useState("0");
