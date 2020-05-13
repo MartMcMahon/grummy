@@ -1,0 +1,109 @@
+.card {
+  border: 1px solid black;
+  display: inline-block;
+  height: 52px;
+  width: 38px;
+}
+.card.selected {
+  border: 2px solid cyan;
+}
+
+.card-area{
+  margin: 20px;
+  max-width: 666px;
+}
+
+.top-area {
+  display: block;
+  width: 100%;
+
+  .opponent {
+    border: 1px dotted black;
+    display: inline-block;
+    padding: 4px;
+    height: 60px;
+    width: 40%;
+  }
+
+  .top-opponent {
+    width: 80%;
+  }
+}
+
+.draw-discard-area {
+  max-width: 666px;
+  width: 100%;
+
+  .card-button {
+    display: inline-block;
+    font-size: 20px;
+    text-align: center;
+    width: 74px;
+    height: 100px;
+  }
+
+  .deck {
+    background: repeating-linear-gradient(
+      45deg,
+      #d0e5f8,
+      #d0e5f8 10px,
+      #bad0ef 10px,
+      #bad0ef 20px
+    );
+    float: left;
+  }
+
+  .discard {
+    border: 1px dotted darkred;
+    max-width: 666px;
+    width: calc(666px - (75px * 2));
+  }
+
+  .draw-from-pile-button {
+    background: repeating-linear-gradient(
+      16deg,
+      #af8baf,
+      #af8baf 10px,
+      #496a8e 10px,
+      #496a8e 20px
+    );
+  }
+
+  .play-card-button {
+    background: repeating-linear-gradient(
+      45deg,
+      #e5f8d0,
+      #e5f8d0 10px,
+      #d0efba 10px,
+      #d0efba 20px
+    );
+  }
+
+  .discard-card-button {
+    background: repeating-linear-gradient(
+      -45deg,
+      #f8d0e5,
+      #f8d0e5 10px,
+      #efbad0 10px,
+      #efbad0 20px
+    );
+  }
+}
+
+.play-area {
+  border: 1px dotted black;
+  display: inline-block;
+  max-width: 666px;
+  padding: 4px;
+  height: 60px;
+  width: 100%;
+}
+
+.hand {
+  border: 1px dashed black;
+  display: inline-block;
+  max-width: 666px;
+  padding: 4px;
+  height: 60px;
+  width: 100%;
+}

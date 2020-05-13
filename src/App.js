@@ -5,8 +5,6 @@ import MessageArea from "./messageArea";
 import { useAuth } from "./useAuth";
 import Lobby from "./lobby";
 
-import "./main.scss";
-
 function App() {
 
   let user = useAuth(firebase);
