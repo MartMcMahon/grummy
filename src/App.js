@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     firebase.auth().signInAnonymously();
-  }, []);
+  }, [user]);
 
   const getRoute = route => {
     switch (route) {
