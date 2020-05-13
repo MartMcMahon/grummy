@@ -16,7 +16,7 @@ export class Card {
   suit;
 
   constructor(suit, value) {
-    if (value===undefined) {
+    if (value === undefined) {
       if (Array.isArray(suit)) {
         this.suit = suit[0];
         this.value = suit[1];
@@ -24,7 +24,7 @@ export class Card {
         this.suit = suit.suit;
         this.value = suit.value;
       } else {
-        console.log({suit, value});
+        console.log({ suit, value });
         throw TypeError("invalid card");
       }
     } else {
@@ -34,7 +34,7 @@ export class Card {
   }
 
   is(other_card) {
-    return (this.suit === other_card.suit && this.value === other_card.value);
+    return this.suit === other_card.suit && this.value === other_card.value;
   }
 
   toString() {
@@ -48,10 +48,10 @@ export class Card {
   render(attrs, options) {
     const xOffset = -38 * (this.value - 1) - this.value - this.value / 8;
     const yOffset = -52 * this.suit;
-    const {isSelected} = options || false;
+    const { isSelected } = options || false;
     return (
       <div
-        className={`hand-card ${isSelected ? "selected" : ""}`}
+        className={`card ${isSelected ? "selected" : ""}`}
         style={{
           backgroundImage: `url('${cardsImage}')`,
           backgroundPositionX: `${xOffset}px`,
@@ -67,7 +67,6 @@ export class Card {
 
 export class Deck extends Array {
   constructor() {
-    console.log("new deck");
     super();
     for (let s = 0; s < 4; s += 1) {
       for (let v = 0; v < 13; v += 1) {
