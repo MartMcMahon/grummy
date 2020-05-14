@@ -125,7 +125,7 @@ const CardArea = props => {
     } else {
       setSelectButton(null);
     }
-  }, [selected, selectedDiscard ]);
+  }, [userId, selected, selectedDiscard ]);
 
   return (
     <div className="card-area">
