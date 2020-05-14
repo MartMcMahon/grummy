@@ -7,7 +7,7 @@ function createUUID() {
     /[xy]/g,
     function(c) {
       var r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
+        v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     }
   );
@@ -35,7 +35,7 @@ if (firebase.messaging.isSupported()) {
 
 const MessagesContent = props => {
   let [username, setUsername] = useState("new user");
-  let [extended, setExtended] = useState(false);
+  // let [extended, setExtended] = useState(false);
   let [localMessage, setLocalMessage] = useState("");
   let [messages, setMessages] = useState([]);
 
