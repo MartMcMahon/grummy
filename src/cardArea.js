@@ -1,75 +1,33 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card } from "./cards";
+import "./cardArea.scss";
 
 let api_root = "https://grummy.mart.pizza:8080";
 if (process.env.NODE_ENV === "development") {
   api_root = "http://localhost:6969";
 }
 
-
 const CardArea = props => {
   let [gameId, setGameId] = useState("0");
   let [chair, setChair] = useState(0);
   let [hand, setHand] = useState([]);
-  let [selected, setSelected] = useState([]);
-  let [discard, setDiscard] = useState([]);
-  let [selectedDiscard, setSelectedDiscard] = useState(-1);
   let [table, setTable] = useState([[], [], [], []]);
-  let [output, setOutput] = useState("");
-  let [turn, setTurn] = useState(-1);
-  let [phase, setPhase] = useState(-1);
-  let [selectButton, setSelectButton] = useState(null);
-
+  let [discard, setDiscard] = useState([]);
+  let [selected, setSelected] = useState([]);
+  let [selectedDiscard, setSelectedDiscard] = useState(-1);
   let userId = props.userId;
 
-  useEffect(() => {
-    const game_pinger = setInterval(() => {
-      axios.get(`${api_root}/state?userId=${userId}`).then(res => {
-        console.log("state request", res);
-        const new_table = res.data.table.map((played_cards, i) =>
-          res.data.table[(i + chair) % 4].map(card => new Card(card))
-        );
-        console.log("chair", chair);
-        console.log("new table", new_table);
-        setTable(new_table);
-        setHand(res.data.hand.map(card => new Card(card)));
-        setDiscard(res.data.discard.map(card => new Card(card)));
-        setTurn(res.data.turn);
-        setPhase(res.data.phase);
-      });
-    }, 2000);
-    return () => {
-      clearInterval(game_pinger);
-    };
-  }, [chair, userId]);
+  // actions
+  const drawAction = event => {
+    console.log("draw");
+    axios.get(`${api_root}/draw/?userId=${userId}`).then(res => {
+      const newHand = res.data.hand.map(base_card => new Card(base_card));
+      setHand(newHand);
+    });
+  };
 
-  useEffect(() => {
-    axios
-      .get(`${api_root}/game_status`)
-      .then(res => {
-        console.log("cool", res.data.id);
-        setGameId(res.data.id);
-      })
-      .then(() => {
-        axios.put(`${api_root}/register_player?userId=${userId}`).then(res => {
-          console.log(res);
-          setChair(res.data.chair);
-        });
-      });
-  }, [gameId, userId]);
-
-  useEffect(() => {
-    let newOutput = "";
-    if (turn === chair) {
-      newOutput = "your turn";
-    } else {
-      newOutput = "";
-    }
-    setOutput(newOutput);
-  }, [chair, turn, phase]);
-
-  const playCards = e => {
+  const playAction = event => {
     if (selected.length > 0) {
       axios
         .put(
@@ -84,135 +42,127 @@ const CardArea = props => {
     }
   };
 
-  useEffect(() => {
+  const discardAction = event => {
     if (selected.length === 1) {
-      setSelectButton(
-        <div
-          className="select-button"
-          onClick={e => {
-            if (selected.length === 1) {
-              axios
-                .put(
-                  `${api_root}/discard?userId=${userId}&index=${selected[0]}`
-                )
-                .then(res => {
-                  console.log("discard res", res);
-                  setSelected([]);
-                });
-            } else if (selected.length > 1) {
-              alert("that's too many");
-            } else {
-              return true;
-            }
-          }}
-          role="button"
-        >
-          discard
-        </div>
-      );
-    } else if (selectedDiscard !== -1) {
-      setSelectButton(
-        <div
-          className="select-button"
-          onClick={e => {
-            console.log("drawing from the discard pile");
-          }}
-          role="button"
-        >
-          from discard
-        </div>
-      );
+      axios
+        .put(`${api_root}/discard?userId=${userId}&index=${selected[0]}`)
+        .then(res => {
+          console.log("discard res", res);
+          setSelected([]);
+        });
+    } else if (selected.length > 1) {
+      alert("that's too many");
     } else {
-      setSelectButton(null);
+      return true;
     }
-  }, [chair, userId, selected, selectedDiscard ]);
+  };
+
+  // effects
+  useEffect(() => {
+    axios
+      .get(`${api_root}/game_status`)
+      .then(res => {
+        setGameId(res.data.id);
+      })
+      .then(() => {
+        axios.put(`${api_root}/register_player?userId=${userId}`).then(res => {
+          setChair(res.data.chair);
+        });
+      });
+  }, [gameId, userId]);
+
+  useEffect(() => {
+    const game_pinger = setInterval(() => {
+      axios.get(`${api_root}/state?userId=${userId}`).then(res => {
+        const new_table = res.data.table.map((played_cards, i) =>
+          res.data.table[(i + chair) % 4].map(card => new Card(card))
+        );
+        setTable(new_table);
+        setHand(res.data.hand.map(card => new Card(card)));
+        setDiscard(res.data.discard.map(card => new Card(card)));
+        // setTurn(res.data.turn);
+        // setPhase(res.data.phase);
+      });
+    }, 2000);
+    return () => {
+      clearInterval(game_pinger);
+    };
+  }, [chair, userId]);
 
   return (
     <div className="card-area">
-      <div className="output">{output}</div>
-
-      <div className="player-area">
-        <div
-          className="opp opp-left"
-          style={{ border: "1px dotted darkred" }}
-          onClick={e => {
-            console.log("expand");
-          }}
-        >
-          cards player 1
+      <div className="top-area">
+        <div className="opponent top-opponent">
           {table[1].map(card => {
             return card.render();
           })}
+          top opponent
         </div>
-        <div
-          className="opp opp-center"
-          style={{ border: "1px dotted darkgreen" }}
-        >
-          cards player 2
+        <div className="opponent left-opponent">
           {table[2].map(card => {
             return card.render();
           })}
+          left opponent
         </div>
-        <div
-          className="opp opp-right"
-          style={{ border: "1px dotted darkblue" }}
-        >
-          cards player 3
+        <div className="opponent right-opponent">
           {table[3].map(card => {
             return card.render();
           })}
+          right opponent
         </div>
       </div>
-
-      <div
-        className="deck"
-        onClick={e => {
-          axios.get(`${api_root}/draw/?userId=${userId}`).then(res => {
-            const newHand = res.data.hand.map(base_card => new Card(base_card));
-            setHand(newHand);
-          });
-        }}
-      >
-        <div className="draw-button">Draw</div>
-      </div>
-      <div className="discard-area">
-        {discard.map((card, i) => {
-          return (
-            <div
-              className={`discard-card${
-                i === selectedDiscard ? " selected" : ""
-              }`}
-              onClick={e => {
-                setSelected([]);
-                if (i === selectedDiscard) {
-                  setSelectedDiscard(-1);
-                } else {
-                  setSelectedDiscard(i);
-                }
-              }}
-            >
-              {card.render()}
-            </div>
-          );
-        })}
-      </div>
-
-      {selectButton}
-
-      <div className="player-area">
-        <div className="player" onClick={playCards}>
-          {table[0].map(card => {
-            return card.render();
+      <div className="draw-discard-area">
+        <div className="card-button deck" onClick={drawAction}>
+          draw
+        </div>
+        <div className="card-button discard">
+          {discard.map((card, i) => {
+            return (
+              <div
+                className={`discard-card${
+                  i === selectedDiscard ? " selected" : ""
+                }`}
+                onClick={e => {
+                  setSelected([]);
+                  if (i === selectedDiscard) {
+                    setSelectedDiscard(-1);
+                  } else {
+                    setSelectedDiscard(i);
+                  }
+                }}
+              >
+                {card.render()}
+              </div>
+            );
           })}
         </div>
+        {selectedDiscard > -1 && (
+          <div className="button card-button draw-from-pile-button">pickup</div>
+        )}
+        {selected.length > 0 && (
+          <div
+            className="button card-button play-card-button"
+            onClick={playAction}
+          >
+            play
+          </div>
+        )}
+        {selected.length === 1 && (
+          <div
+            className="button card-button discard-card-button"
+            onClick={discardAction}
+          >
+            discard
+          </div>
+        )}
       </div>
-
-      <div
-        className="hand-area"
-        onMouseDown={e => {
-          console.log(e.target);
-        }}
-      >
+      <div className="player play-area">
+        {table[0].map(card => {
+          return card.render();
+        })}
+      </div>
+      <div className="player hand">
+        your hand
         {hand.map((card, i) => {
           return card.render(
             {
