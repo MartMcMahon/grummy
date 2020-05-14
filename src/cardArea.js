@@ -88,7 +88,7 @@ const CardArea = props => {
     return () => {
       clearInterval(game_pinger);
     };
-  }, [userId, selected, selectedDiscard ]);
+  }, [chair, userId, selected, selectedDiscard ]);
 
   return (
     <div className="card-area">
