@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CardArea from "./cardArea";
 import firebase from "./firebase";
-import MessageArea from "./messageArea";
 import Lobby from "./lobby";
 
 import "./main.scss";
