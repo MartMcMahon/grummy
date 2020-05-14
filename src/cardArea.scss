@@ -8,7 +8,7 @@
   border: 2px solid cyan;
 }
 
-.card-area{
+.card-area {
   margin: 20px;
   max-width: 666px;
 }
@@ -57,6 +57,12 @@
     border: 1px dotted darkred;
     max-width: 666px;
     width: calc(666px - (75px * 2));
+
+    .selected {
+      div {
+        border: 2px solid darkred;
+      }
+    }
   }
 
   .draw-from-pile-button {
@@ -67,6 +73,7 @@
       #496a8e 10px,
       #496a8e 20px
     );
+    float: right;
   }
 
   .play-card-button {
@@ -77,6 +84,7 @@
       #d0efba 10px,
       #d0efba 20px
     );
+    float: right;
   }
 
   .discard-card-button {
@@ -87,6 +95,7 @@
       #efbad0 10px,
       #efbad0 20px
     );
+    float: right;
   }
 }
 
