@@ -55,7 +55,7 @@ class GameObject {
 
   drawForTurn(userId) {
     this.phase += 1;
-    return deal(userId);
+    return this.deal(userId);
   }
 
   deal(userId, n = 1) {
@@ -86,10 +86,10 @@ class GameObject {
     this.hands[userId].splice(index, 1);
   }
 
-  pickupDiscard(userId, index) {
+  pickup(userId, index) {
     let cards = this.discard.splice(index);
     cards[0].mustPlay = true;
-    this.hands[userId].push(cards);
+    this.hands[userId].push(...cards);
   }
 
 }

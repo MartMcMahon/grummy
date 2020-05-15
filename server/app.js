@@ -73,6 +73,13 @@ app.put("/discard", (req, res) => {
   res.send(new_state);
 });
 
+app.get("/pickup", (req, res) => {
+  const userId = req.query.userId;
+  const index = req.query.index;
+  const new_state = gameObject.pickup(userId, index);
+  res.send(new_state);
+});
+
 app.put("/register_player", (req, res) => {
   let userId = req.query.userId;
   let response = {};
@@ -80,7 +87,7 @@ app.put("/register_player", (req, res) => {
   response.chair = chair;
   switch (chair) {
     case "taken":
-      ressponse.statusCode = 409;
+      response.statusCode = 409;
       response.statusText = "username taken";
       break;
     case -1:

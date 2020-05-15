@@ -18,7 +18,9 @@ const CardArea = props => {
   let [selectedDiscard, setSelectedDiscard] = useState(-1);
   let userId = props.userId;
 
+  // ********
   // actions
+  // ********
   const drawAction = event => {
     console.log("draw");
     axios.get(`${api_root}/draw/?userId=${userId}`).then(res => {
@@ -55,6 +57,15 @@ const CardArea = props => {
     } else {
       return true;
     }
+  };
+
+  const pickupAction = event => {
+    axios
+      .get(`${api_root}/pickup?userId=${userId}&index=${selectedDiscard}`)
+      .then(res => {
+        console.log("pickup res", res);
+        setSelectedDiscard(-1);
+      });
   };
 
   // effects
