@@ -9,29 +9,24 @@
 }
 
 .card-area {
-  margin: 20px;
-  max-width: 666px;
+  margin: 6px;
+  max-width: 312px;
 }
 
 .top-area {
   display: block;
-  width: 100%;
 
   .opponent {
     border: 1px dotted black;
     display: inline-block;
     padding: 4px;
     height: 60px;
-    width: 40%;
-  }
-
-  .top-opponent {
-    width: 80%;
+    width: 300px;
   }
 }
 
 .draw-discard-area {
-  max-width: 666px;
+  max-width: 312px;
   width: 100%;
 
   .card-button {
@@ -55,8 +50,8 @@
 
   .discard {
     border: 1px dotted darkred;
-    max-width: 666px;
-    width: calc(666px - (75px * 2));
+    max-width: 312px;
+    width: 100%;
 
     .selected {
       div {
@@ -73,7 +68,6 @@
       #496a8e 10px,
       #496a8e 20px
     );
-    float: right;
   }
 
   .play-card-button {
@@ -84,7 +78,6 @@
       #d0efba 10px,
       #d0efba 20px
     );
-    float: right;
   }
 
   .discard-card-button {
@@ -95,14 +88,13 @@
       #efbad0 10px,
       #efbad0 20px
     );
-    float: right;
   }
 }
 
 .play-area {
   border: 1px dotted black;
   display: inline-block;
-  max-width: 666px;
+  max-width: 300px;
   padding: 4px;
   height: 60px;
   width: 100%;
@@ -111,7 +103,7 @@
 .hand {
   border: 1px dashed black;
   display: inline-block;
-  max-width: 666px;
+  max-width: 300px;
   padding: 4px;
   height: 60px;
   width: 100%;

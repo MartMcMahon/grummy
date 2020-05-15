@@ -115,6 +115,26 @@ const CardArea = props => {
         <div className="card-button deck" onClick={drawAction}>
           draw
         </div>
+
+        <div
+          className="button card-button play-card-button"
+          onClick={playAction}
+        >
+          play
+        </div>
+        <div
+          className="button card-button discard-card-button"
+          onClick={discardAction}
+        >
+          discard
+        </div>
+        <div
+          className="button card-button draw-from-pile-button"
+          onClick={pickupAction}
+        >
+          pickup
+        </div>
+
         <div className="card-button discard">
           {discard.map((card, i) => {
             return (
@@ -136,25 +156,6 @@ const CardArea = props => {
             );
           })}
         </div>
-        {selectedDiscard > -1 && (
-          <div className="button card-button draw-from-pile-button">pickup</div>
-        )}
-        {selected.length > 0 && (
-          <div
-            className="button card-button play-card-button"
-            onClick={playAction}
-          >
-            play
-          </div>
-        )}
-        {selected.length === 1 && (
-          <div
-            className="button card-button discard-card-button"
-            onClick={discardAction}
-          >
-            discard
-          </div>
-        )}
       </div>
       <div className="player play-area">
         {table[0].map(card => {
