@@ -24,14 +24,14 @@ jobs:
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
         TARGET: ${{ secrets.REMOTE_TARGET }}
 
-  build_server:
-    runs-on: ubuntu-latest
+  # build_server:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Backend deployment hook
-        uses: distributhor/workflow-webhook@v1
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL }}
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+  #     - name: Backend deployment hook
+  #       uses: distributhor/workflow-webhook@v1
+  #       env:
+  #         webhook_url: ${{ secrets.WEBHOOK_URL }}
+  #         webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
