@@ -29,3 +29,7 @@ yarn-error.log*
 # lock files
 package-lock.json
 yarn.lock
+
+# love2d-ios
+ios/love-*-ios-source
+ios/game.love
