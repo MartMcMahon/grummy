@@ -1,15 +1,23 @@
-const hostname = "127.0.0.1";
+const hostname = "localhost";
 const port = 6969;
 
-const express = require("express");
-const cors = require("cors");
-const https = require("https");
-const app = express();
+const net = require("net");
 
-app.use(cors());
-app.get("/", (req, res) => {
-  console.log("connected");
-  res.send({"statusCode": 200, "body": "hello"});
+let sockets = [];
+let server = net.createServer();
+
+server.on("connection", socket => {
+  console.log("someone connected");
+  socket.setEncoding("utf8");
+  sockets.push(socket);
+  socket.on('data', data => {
+    console.log(data);
+    let clients = sockets.length;
+    for ( let i = 0; i < clients; i++) {
+      sockets[i].write(data);
+    }
+  });
+
 });
 
-app.listen(port);
+server.listen(6969);

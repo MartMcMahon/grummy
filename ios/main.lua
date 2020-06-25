@@ -1,8 +1,6 @@
 Object = require("classic")
-local io = require("io")
-local http = require("socket.http")
 local json = require("json")
-local ltn12 = require("ltn12")
+local socket = require("socket")
 Button = require("button")
 
 love.window.setMode(0, 0, nil)
@@ -19,28 +17,23 @@ buttons = {
 
 function love:load()
   t = "welcome to anor londo!"
-  url = "http://localhost:6969"
   -- love.window.setMode(unpack(window_size))
-  res = http.request(url)
-  if res then
-    res = json.decode(res)
-  else
-    res = {}
-  end
 
-  if (res.statusCode == 200) then
-    print('ok')
-    res = res.body
-  else
-    res = "trouble connecting"
-    print(res)
-  end
+  connect()
+
 end
 
-function love:update(dt)
+function love.update(dt)
+
+  x, y = love.mouse.getPosition()
+  tcp:send(tostring(x..y))
+
+  t = love.timer.getFPS()
   for k,button in pairs(buttons) do
     button:update(dt)
   end
+
+  x, y = love.mouse.getPosition()
 end
 
 -- function love.mousepressed(x, y, button, istouch, presses)
@@ -53,11 +46,20 @@ end
 
 function love.draw()
   love.graphics.print(t, 20, 20)
-  love.graphics.print(res, 20, 40)
+  -- love.graphics.print(res, 20, 40)
 
   for k,button in pairs(buttons) do
     button:draw()
   end
 end
 
+function connect()
+  url = "localhost"
+  port = 6969
+  tcp = socket.tcp()
+  tcp:connect(url, port)
+end
 
+function disconnect()
+  tcp:shutdown("both")
+end
