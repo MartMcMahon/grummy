@@ -1,14 +1,15 @@
 local Object = require("classic")
 Button = Object.extend(Object)
 
-function Button:new(x, y, w, h)
+function Button:new(x, y, w, h, text)
   self.pos = {x = x, y = y}
   self.w = w
   self.h = h
+  self.text = text
 
   -- colors
-  self.normal = {0.8, 0.65, 0.8, 0.6}
-  self.highlight = {0.8, 0.65, 0.8, 1}
+  self.normal = {0.3, 0.65, 1, 0.6}
+  self.highlight = {0.3, 0.65, 1, 1}
   self.pressed = {0.8, 0.8, 0.8, 0.4}
   self.color = self.normal
 end
@@ -47,7 +48,7 @@ function Button:draw()
   love.graphics.setColor(self.color)
   love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.w, self.h, 4, 4)
   love.graphics.setColor({0, 0, 0, 1})
-  love.graphics.print("End Turn", self.pos.x, self.pos.y)
+  love.graphics.print(self.text, self.pos.x, self.pos.y)
   love.graphics.setColor(old_color)
 end
 
