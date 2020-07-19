@@ -21,12 +21,18 @@ end
 function Network:connect()
   self.tcp = socket.tcp()
   self.tcp:settimeout(1)
-
   self.tcp:connect(self.url, self.port)
   self.uid = uuid()
   self.tcp:send(json.encode({["action"] = "identify", ["uid"] = self.uid}))
   res = self.tcp:receive("*l")
   return res
+end
+
+function Network:sync()
+  if self.tcp then
+    return json.decode(self.tcp:send(json.encode({["action"] = "sync"})))
+  end
+  return ""
 end
 
 function Network:disconnect()

@@ -42,8 +42,8 @@ server.on("connection", socket => {
     console.log(data);
     if (data.action == "identify") {
       console.log("hello, " + data.uid + "!");
-      socket.write(data.uid + "\n");
       gameObject.register_player(data.uid, socket);
+      socket.write(JSON.stringify({"id": data.uid, "seats": gameObject.table}) + "\n");
     }
   });
 

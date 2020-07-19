@@ -14,10 +14,19 @@ love.window.setMode(window_size.x, window_size.y)
 
 local lg = love.graphics
 
+local player = {}
+
 STATE = {
   lobby = 1,
   game = 2
 }
+PHASE = {
+  draw = 1,
+  main = 2,
+  discard = 3
+}
+
+is_synced = false
 
 card_size = Card(1, 1, -100, -100)
 cards = {}
@@ -31,7 +40,7 @@ buttons = {
   connect = Button(window_size.x/2, window_size.y/2, 100, 50, "connect")
 }
 function buttons.connect.click()
-  res = network:connect()
+  local res = network:connect()
   if res == nil then
     print("there was an error connecting")
   end
@@ -123,6 +132,23 @@ function love.draw()
   if gameState == STATE.lobby then
     -- lg.print(t, 20, 20)
   elseif gameState == STATE.game then
+    if current_turn == player.seat then
+      if turn_phase == PHASE.draw then
+        -- show the draw button
+        -- player can't really do anything else
+      elseif turn_phase == PHASE.main then
+        -- player can play shit. let them select cards by clicking
+        -- show the 'play this' button
+        -- show the 'discard' button
+      elseif turn_phase == PHASE.discard then
+        -- player can select card to discard
+        -- show the 'select' button
+      end
+    else
+      -- look to update_data
+      -- draw what other players are doing
+    end
+
 
     if area.is_mouse_over and selected then
       lg.setColor(.5, .5, 1, .7)
