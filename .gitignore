@@ -33,4 +33,5 @@ yarn.lock
 # love2d-ios
 ios/love-*-ios-source
 ios/game.love
+ios/assets/*.psd
 ios/assets/*.zip

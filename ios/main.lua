@@ -46,6 +46,13 @@ function love:load()
   gameState = STATE.lobby
 
   selected = false
+  face_downs = {}
+  for i=1, 52 do
+    c = Card(1, 1, -100, -100, true)
+    c.sprite = lg.newImage("assets/cat_back.png")
+    table.insert(face_downs, c)
+  end
+
 end
 
 function load_game()
@@ -67,6 +74,15 @@ function love.update(dt)
     card:update(dt, x, y)
   end
 
+  for i, card in ipairs(cards) do
+    if card:mouse_in_bounds(x, y) then
+      card.highlight = true
+      break
+    else
+      card.highlight = false
+    end
+  end
+
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
@@ -81,12 +97,17 @@ function love.mousepressed(x, y, button, istouch, presses)
     if card:mouse_in_bounds(x, y) and not selected then
       print(card:toString())
       card.isSelected = true
+      selected = card
+      break
     end
   end
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
-  selected = false
+  if selected then
+    selected.isSelected = false
+    selected = false
+  end
 end
 
 -- function love.touchpressed(id, x, y, dx, dy, pressure)
@@ -103,16 +124,7 @@ end
 function love.draw()
   if gameState == STATE.lobby then
     -- lg.print(t, 20, 20)
-  else
-    lg.setColor(1, 1, 1, 1)
-    v = 10
-    s = 2
-    suit_string = {
-      "clover",
-      "diamond",
-      "heart",
-      "spade",
-    }
+  elseif gameState == STATE.game then
 
     for i,card in ipairs(cards) do
       card:draw()
@@ -121,5 +133,13 @@ function love.draw()
 
   for k,button in pairs(buttons) do
     button:draw()
+  end
+
+  for x=0, 10, 2 do
+    if face_downs[1] then
+      face_downs[1].x = x
+      face_downs[1].y = 10
+      face_downs[1]:draw()
+    end
   end
 end

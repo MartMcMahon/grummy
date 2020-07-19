@@ -33,7 +33,9 @@ local function getSprite(s, v)
   return lg.newImage(string.format("assets/card_%s_%s.png", v, suit_string(s)))
 end
 
-function Card:new(s, v, x, y)
+function Card:new(s, v, x, y, is_face_down)
+  self.is_face_down = is_face_down or false
+
   self.s = s
   self.v = v
   self.sprite = getSprite(s, v)
@@ -48,16 +50,16 @@ function Card:new(s, v, x, y)
 end
 
 function Card:update(dt, x, y)
-  if self:mouse_in_bounds(x, y) then
-    self.highlight = true
-  else
-    self.highlight = false
+  if self.is_face_down then
+    return
   end
-
   if self.isSelected then
-    self.x = x
-    self.y = y
+    self.x = x - self.w/2
+    self.y = y - self.h/2
   end
+  -- if self:mouse_in_bounds(x, y) == false then
+  --   self.highlight = false
+  -- end
 end
 
 function Card:mouse_in_bounds(mouse_x, mouse_y)
@@ -74,7 +76,7 @@ end
 function Card:draw()
   if self.highlight then
     lg.setColor(0.196, 1, 0.7373)
-    lg.rectangle("fill", self.x - 2, self.y - 2, self.w + 2, self.h + 2)
+    lg.rectangle("fill", self.x - 2, self.y - 2, self.w + 4, self.h + 4)
   end
   lg.setColor(1, 1, 1, 1)
   lg.draw(self.sprite, self.x, self.y)
