@@ -6,10 +6,9 @@ const net = require("net");
 let sockets = [];
 let server = net.createServer();
 
-
 class GameObject {
   constructor() {
-    this.id = Date.now().toString()
+    this.id = Date.now().toString();
     this.players = {};
     this.table = ["", "", "", ""];
     this.turn = 0;
@@ -38,24 +37,23 @@ server.on("connection", socket => {
     console.log("ready", x);
   });
 
-  socket.on('data', data => {
+  socket.on("data", data => {
     data = JSON.parse(data);
     console.log(data);
     if (data.action == "identify") {
-      console.log('hello, ' + data.uid + '!');
-      socket.write(data.uid + '\n');
+      console.log("hello, " + data.uid + "!");
+      socket.write(data.uid + "\n");
       gameObject.register_player(data.uid, socket);
     }
   });
 
   socket.on("end", () => {
-    console.log('disconnected');
+    console.log("disconnected");
   });
 
-  socket.on('error', err => {
-    console.log('an error happened', err);
+  socket.on("error", err => {
+    console.log("an error happened", err);
   });
-
 });
 
 // setInterval(() => {
@@ -65,7 +63,4 @@ server.on("connection", socket => {
 //   });
 // }, 1000);
 
-
-
 server.listen(6969);
-
