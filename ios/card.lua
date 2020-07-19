@@ -57,9 +57,6 @@ function Card:update(dt, x, y)
     self.x = x - self.w/2
     self.y = y - self.h/2
   end
-  -- if self:mouse_in_bounds(x, y) == false then
-  --   self.highlight = false
-  -- end
 end
 
 function Card:mouse_in_bounds(mouse_x, mouse_y)

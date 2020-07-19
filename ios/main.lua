@@ -6,8 +6,6 @@ Card = require("card")
 love.window.setMode(0, 0, nil)
 local screen_width = love.graphics.getWidth()
 local screen_height = love.graphics.getHeight()
-print(screen_width)
-print(screen_height)
 window_size = {
   x = math.min(screen_width/2, 1436),
   y = math.min(screen_height/2, 1025)
@@ -126,6 +124,11 @@ function love.draw()
     -- lg.print(t, 20, 20)
   elseif gameState == STATE.game then
 
+    if area.is_mouse_over and selected then
+      lg.setColor(.5, .5, 1, .7)
+      lg.rectangle("fill", 0, 0, window_size.x, window_size.y/2)
+    end
+
     for i,card in ipairs(cards) do
       card:draw()
     end
@@ -143,3 +146,10 @@ function love.draw()
     end
   end
 end
+
+area = {x=0, y=0, w=window_size.x, h=window_size.y/2}
+function area:mouse_in_bounds(mouse_x, mouse_y)
+  self.is_mouse_over = mouse_x > self.x and mouse_x < self.x + self.w and mouse_y > self.y and mouse_y < self.y + self.h
+  return self.is_mouse_over
+end
+
