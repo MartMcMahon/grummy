@@ -25,6 +25,8 @@ yarn-error.log*
 
 # vim
 *.swp
+kite-vim.log
+tags
 
 # lock files
 package-lock.json

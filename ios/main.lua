@@ -1,3 +1,4 @@
+local json = require("json")
 local Object = require("classic")
 Button = require("button")
 Network = require("network")
@@ -26,13 +27,20 @@ PHASE = {
   discard = 3
 }
 
+sample_tab = {["name"] = 'dwyn', 'mart', 'third'}
+sample_tab[2]
+
+sample_tab["name"]
+PHASE.draw
+
+lobby_age = 0
 is_synced = false
 
 card_size = Card(1, 1, -100, -100)
 cards = {}
 for i,s in pairs(SUIT) do
   for v=1, 13 do
-    table.insert(cards, Card(s, v, v*card_size.w, s*card_size.h))
+    table.insert(cards, Card(s, v, 0, 0))
   end
 end
 
@@ -60,6 +68,9 @@ function love:load()
     table.insert(face_downs, c)
   end
 
+  -- ping the server and establish socket
+  -- seats = network:ping()
+  -- print(seats["seats"][1])
 end
 
 function load_game()
@@ -67,9 +78,18 @@ function load_game()
     end_turn = Button(window_size.x - 200, window_size.y - 80, 200, 50, "discard")
   }
   gameState = STATE.game
+  is_synced = false
 end
 
 function love.update(dt)
+  lobby_age = lobby_age + dt
+  if gameState == STATE.lobby and lobby_age >= 1 then
+    res = network:ping()
+    -- seats = json.decode(res)
+    print(res, seats)
+    lobby_age = 0
+  end
+
   x, y = love.mouse.getPosition()
   -- tcp:send(tostring(x..y))
 
@@ -81,12 +101,40 @@ function love.update(dt)
     card:update(dt, x, y)
   end
 
-  for i, card in ipairs(cards) do
-    if card:mouse_in_bounds(x, y) then
+  -- reversed to pick top cards first
+  local highlight_found = false
+  for i = #cards, 1, -1 do
+    local card = cards[i]
+    if card:mouse_in_bounds(x, y) and highlight_found == false then
       card.highlight = true
-      break
+      highlight_found = true
     else
       card.highlight = false
+    end
+  end
+
+  print(current_turn)
+
+  if gameState == STATE.game then
+    -- TODO actually check turn
+    -- check turn
+    if current_turn == player.seat then
+      -- TODO actually check turn phase
+      -- check turn-phase
+      if turn_phase == PHASE.draw then
+        -- update for draw phase
+        -- player can only really select where to draw from
+      elseif turn_phase == PHASE.main then
+        -- player can play shit. let them select cards by clicking
+        -- show the 'play this' button
+        -- show the 'discard' button
+      elseif turn_phase == PHASE.discard then
+        -- player can select card to discard
+        -- show the 'select' button
+      end
+    else
+      -- look to update_data
+      -- update what other players are doing
     end
   end
 
@@ -103,7 +151,7 @@ function love.mousepressed(x, y, button, istouch, presses)
   for i,card in ipairs(cards) do
     if card:mouse_in_bounds(x, y) and not selected then
       print(card:toString())
-      card.isSelected = true
+      card.is_selected = true
       selected = card
       break
     end
@@ -112,7 +160,7 @@ end
 
 function love.mousereleased(x, y, button, istouch, presses)
   if selected then
-    selected.isSelected = false
+    selected.is_selected = false
     selected = false
   end
 end
@@ -132,6 +180,20 @@ function love.draw()
   if gameState == STATE.lobby then
     -- lg.print(t, 20, 20)
   elseif gameState == STATE.game then
+
+    -- deck in center
+    face_downs[1].x = window_size.x/2
+    face_downs[1].y = window_size.y/2
+    face_downs[1]:draw()
+
+    -- cards in hand
+    for i=1,5 do
+      cards[i].x = i * card_size.w/2
+      cards[i].y = window_size.y - card_size.h
+      print(cards[i].x, cards[i].y)
+      cards[i]:draw()
+    end
+
     if current_turn == player.seat then
       if turn_phase == PHASE.draw then
         -- show the draw button
@@ -155,22 +217,23 @@ function love.draw()
       lg.rectangle("fill", 0, 0, window_size.x, window_size.y/2)
     end
 
-    for i,card in ipairs(cards) do
-      card:draw()
-    end
+    -- for i,card in ipairs(cards) do
+    --   card:draw()
+    -- end
+
   end
 
   for k,button in pairs(buttons) do
     button:draw()
   end
 
-  for x=0, 10, 2 do
-    if face_downs[1] then
-      face_downs[1].x = x
-      face_downs[1].y = 10
-      face_downs[1]:draw()
-    end
-  end
+  -- for x=0, 10, 2 do
+  --   if face_downs[1] then
+  --     face_downs[1].x = x
+  --     face_downs[1].y = 10
+  --     face_downs[1]:draw()
+  --   end
+  -- end
 end
 
 area = {x=0, y=0, w=window_size.x, h=window_size.y/2}

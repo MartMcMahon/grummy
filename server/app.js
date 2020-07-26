@@ -10,15 +10,40 @@ class GameObject {
   constructor() {
     this.id = Date.now().toString();
     this.players = {};
-    this.table = ["", "", "", ""];
+    this.seats = ["", "", "", ""];
     this.turn = 0;
+  }
+
+  testMode() {
+    this.seats = ["20", "69", "420", "666"];
+    this.turn = 0;
+    this.hands = {
+      "20": [
+        { s: 1, v: 2 },
+        { s: 2, v: 2 },
+        { s: 3, v: 2 },
+        { s: 4, v: 2 },
+        { s: 3, v: 11 }
+      ],
+      "69": [
+        { s: 1, v: 6 },
+        { s: 1, v: 5 },
+        { s: 1, v: 9 }
+      ],
+      "420": [
+        { s: 3, v: 3 },
+        { s: 2, v: 10 }
+      ],
+      "666": []
+    };
+    this.played = [];
   }
 
   register_player(uid, socket) {
     this.players[uid] = socket;
-    let idx = this.table.indexOf("");
+    let idx = this.seats.indexOf("");
     if (idx < 4) {
-      this.table[idx] = uid;
+      this.seats[idx] = uid;
     } else {
       console.log(uid + " is just watching.");
     }
@@ -26,6 +51,8 @@ class GameObject {
 }
 
 const gameObject = new GameObject();
+// test mode
+gameObject.testMode();
 
 server.on("connection", socket => {
   console.log("someone connected");
@@ -40,10 +67,28 @@ server.on("connection", socket => {
   socket.on("data", data => {
     data = JSON.parse(data);
     console.log(data);
-    if (data.action == "identify") {
+    if (data.action == "ping") {
+      console.log(`getting pinged`);
+      socket.write(JSON.stringify({ seats: gameObject.seats }) + "\n");
+    } else if (data.action == "identify") {
       console.log("hello, " + data.uid + "!");
       gameObject.register_player(data.uid, socket);
-      socket.write(JSON.stringify({"id": data.uid, "seats": gameObject.table}) + "\n");
+      socket.write(
+        JSON.stringify({ id: data.uid, seats: gameObject.seats }) + "\n"
+      );
+    } else if () {
+    } else if (data.action == "sync") {
+      console.log("syncing with ", data.id);
+      gameObject.player_status[id] = true;
+      all_synced = true;
+      Object.entries(gameObject.player_status).forEach(([player, status]) => {
+        all_synced = all_synced && status;
+      });
+      if (all_synced) {
+        console.log("all_synced");
+      } else {
+        console.log("not all ");
+      }
     }
   });
 

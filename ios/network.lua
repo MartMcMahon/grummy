@@ -1,4 +1,5 @@
 local random = math.random
+math.randomseed(os.time())
 local function uuid()
   local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
   return string.gsub(template, '[xy]', function (c)
@@ -18,11 +19,23 @@ function Network:new()
   self.tcp = nil
 end
 
+function Network:ping()
+  self.tcp = socket.tcp()
+  self.tcp:settimeout(6)
+  self.tcp:connect(self.url, self.port)
+  self.tcp:send(json.encode({["action"] = "ping"}))
+  res = self.tcp:receive("*l")
+  self.tcp:close()
+  return res
+end
+
 function Network:connect()
   self.tcp = socket.tcp()
   self.tcp:settimeout(1)
   self.tcp:connect(self.url, self.port)
   self.uid = uuid()
+  -- debug
+  self.uid = 20
   self.tcp:send(json.encode({["action"] = "identify", ["uid"] = self.uid}))
   res = self.tcp:receive("*l")
   return res
@@ -36,7 +49,9 @@ function Network:sync()
 end
 
 function Network:disconnect()
-  tcp:shutdown("both")
+  if tcp then
+    tcp:shutdown("both")
+  end
 end
 
 return Network

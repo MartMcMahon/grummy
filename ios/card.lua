@@ -46,14 +46,11 @@ function Card:new(s, v, x, y, is_face_down)
   self.h = 84
 
   self.highlight = false
-  self.isSelected = false
+  self.is_selected = false
 end
 
 function Card:update(dt, x, y)
-  if self.is_face_down then
-    return
-  end
-  if self.isSelected then
+  if self.is_selected then
     self.x = x - self.w/2
     self.y = y - self.h/2
   end
@@ -62,10 +59,10 @@ end
 function Card:mouse_in_bounds(mouse_x, mouse_y)
   if mouse_x > self.x and mouse_x < self.x + self.w and
    mouse_y > self.y and mouse_y < self.y + self.h then
-    self.highlight = true
+    -- self.highlight = true
     return true
   else
-    self.highlight = false
+    -- self.highlight = false
     return false
   end
 end
