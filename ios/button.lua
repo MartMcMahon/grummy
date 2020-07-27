@@ -1,6 +1,8 @@
 local Object = require("classic")
 Button = Object.extend(Object)
 
+local lg = love.graphics
+
 function Button:new(x, y, w, h, text)
   self.pos = {x = x, y = y}
   self.w = w
@@ -44,12 +46,10 @@ function Button:click()
 end
 
 function Button:draw()
-  local old_color = {love.graphics.getColor()}
-  love.graphics.setColor(self.color)
-  love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.w, self.h, 4, 4)
-  love.graphics.setColor({0, 0, 0, 1})
-  love.graphics.print(self.text, self.pos.x, self.pos.y)
-  love.graphics.setColor(old_color)
+  lg.setColor(self.color)
+  lg.rectangle("fill", self.pos.x, self.pos.y, self.w, self.h, 4, 4)
+  lg.setColor({0, 0, 0, 1})
+  lg.print(self.text, self.pos.x, self.pos.y)
 end
 
 return Button

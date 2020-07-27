@@ -16,7 +16,8 @@ class GameObject {
 
   testMode() {
     this.seats = ["20", "69", "420", "666"];
-    this.turn = 0;
+    this.turn = 1;
+    this.phase = 1;
     this.hands = {
       "20": [
         { s: 1, v: 2 },
@@ -37,6 +38,7 @@ class GameObject {
       "666": []
     };
     this.played = [];
+    this.player_status = {};
   }
 
   register_player(uid, socket) {
@@ -67,7 +69,7 @@ server.on("connection", socket => {
   socket.on("data", data => {
     data = JSON.parse(data);
     console.log(data);
-    if (data.action == "ping") {
+    if (data.action === "ping") {
       console.log(`getting pinged`);
       socket.write(JSON.stringify({ seats: gameObject.seats }) + "\n");
     } else if (data.action == "identify") {
@@ -76,10 +78,10 @@ server.on("connection", socket => {
       socket.write(
         JSON.stringify({ id: data.uid, seats: gameObject.seats }) + "\n"
       );
-    } else if () {
-    } else if (data.action == "sync") {
+      // } else if () {
+    } else if (data.action === "sync") {
       console.log("syncing with ", data.id);
-      gameObject.player_status[id] = true;
+      gameObject.player_status[data.id] = true;
       all_synced = true;
       Object.entries(gameObject.player_status).forEach(([player, status]) => {
         all_synced = all_synced && status;
@@ -89,6 +91,15 @@ server.on("connection", socket => {
       } else {
         console.log("not all ");
       }
+
+      let output_data = {
+          seats: gameObject.seats,
+          turn: gameObject.turn,
+          phase: gameObject.phase
+        };
+      socket.write(
+        JSON.stringify(output_data) + "\n"
+      );
     }
   });
 

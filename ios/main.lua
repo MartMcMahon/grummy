@@ -27,13 +27,7 @@ PHASE = {
   discard = 3
 }
 
-sample_tab = {["name"] = 'dwyn', 'mart', 'third'}
-sample_tab[2]
-
-sample_tab["name"]
-PHASE.draw
-
-lobby_age = 0
+data_age = 0
 is_synced = false
 
 card_size = Card(1, 1, -100, -100)
@@ -43,6 +37,9 @@ for i,s in pairs(SUIT) do
     table.insert(cards, Card(s, v, 0, 0))
   end
 end
+
+current_turn = nil
+phase = nil
 
 buttons = {
   connect = Button(window_size.x/2, window_size.y/2, 100, 50, "connect")
@@ -75,19 +72,25 @@ end
 
 function load_game()
   buttons = {
-    end_turn = Button(window_size.x - 200, window_size.y - 80, 200, 50, "discard")
+    draw = Button(window_size.x/2, window_size.y - 80, 100, 50, "draw"),
+    discard = Button(window_size.x - 200, window_size.y - 80, 200, 50, "discard")
   }
   gameState = STATE.game
   is_synced = false
 end
 
 function love.update(dt)
-  lobby_age = lobby_age + dt
-  if gameState == STATE.lobby and lobby_age >= 1 then
+  data_age = data_age + dt
+  if gameState == STATE.lobby and data_age >= 1 then
     res = network:ping()
     -- seats = json.decode(res)
-    print(res, seats)
-    lobby_age = 0
+    data_age = 0
+  elseif gameState == STATE.game and data_age >= 1 then
+    res = network:sync()
+    current_turn = res.turn
+    phase = res.phase
+    player.seat = 0
+    data_age = 0
   end
 
   x, y = love.mouse.getPosition()
@@ -113,7 +116,6 @@ function love.update(dt)
     end
   end
 
-  print(current_turn)
 
   if gameState == STATE.game then
     -- TODO actually check turn
@@ -124,6 +126,7 @@ function love.update(dt)
       if turn_phase == PHASE.draw then
         -- update for draw phase
         -- player can only really select where to draw from
+
       elseif turn_phase == PHASE.main then
         -- player can play shit. let them select cards by clicking
         -- show the 'play this' button
@@ -190,7 +193,6 @@ function love.draw()
     for i=1,5 do
       cards[i].x = i * card_size.w/2
       cards[i].y = window_size.y - card_size.h
-      print(cards[i].x, cards[i].y)
       cards[i]:draw()
     end
 
@@ -217,14 +219,18 @@ function love.draw()
       lg.rectangle("fill", 0, 0, window_size.x, window_size.y/2)
     end
 
-    -- for i,card in ipairs(cards) do
-    --   card:draw()
-    -- end
-
   end
 
-  for k,button in pairs(buttons) do
-    button:draw()
+  if gameState == STATE.game and current_turn == player.seat then
+    if phase == PHASE.draw then
+      buttons.draw:draw()
+    elseif phase == PHASE.discard then
+      buttons.discard:draw()
+    end
+  else
+    for k,button in pairs(buttons) do
+      button:draw()
+    end
   end
 
   -- for x=0, 10, 2 do
