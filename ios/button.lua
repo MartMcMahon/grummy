@@ -44,7 +44,6 @@ end
 
 function Button:click()
   print("clicked")
-  self.selected = not self.selected
 end
 
 function Button:draw()

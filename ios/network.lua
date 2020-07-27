@@ -43,8 +43,12 @@ end
 
 function Network:sync()
   if self.tcp then
-    self.tcp:send(json.encode({["action"] = "sync"}))
-    return json.decode(self.tcp:receive())
+    self.tcp:send(json.encode({["action"] = "sync", ["uid"] = "20"}))
+    x = self.tcp:receive()
+    print(x)
+    print(json.decode(x))
+    return json.decode(x)
+    -- return json.decode(self.tcp:receive())
   end
   return ""
 end

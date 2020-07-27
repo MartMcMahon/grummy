@@ -7,6 +7,17 @@ let sockets = [];
 let server = net.createServer();
 let { Card, Deck, Discard } = require("./cards");
 
+function objectify_cards(cards) {
+  if (!cards) {
+    cards = [];
+  }
+  let new_cards = [];
+  cards.forEach(card => {
+    new_cards.push({s: card.suit, v: card.value});
+  });
+  return new_cards
+}
+
 class GameObject {
   constructor() {
     this.id = Date.now().toString();
@@ -35,6 +46,7 @@ class GameObject {
       "420": [this.deck.draw(), this.deck.draw()],
       "666": []
     };
+    this.discard = [{s: 0, v: 0}, {s:2, v:0}, {s:0, v:2}];
     this.played = [];
     this.player_status = {};
   }
@@ -82,8 +94,8 @@ server.on("connection", socket => {
       );
       // } else if () {
     } else if (data.action === "sync") {
-      console.log("syncing with ", data.id);
-      gameObject.player_status[data.id] = true;
+      console.log("syncing with ", data.uid);
+      gameObject.player_status[data.uid] = true;
       all_synced = true;
       Object.entries(gameObject.player_status).forEach(([player, status]) => {
         all_synced = all_synced && status;
@@ -94,10 +106,14 @@ server.on("connection", socket => {
         console.log("not all ");
       }
 
+        console.log(objectify_cards(gameObject.hands[data.uid]))
+
       let output_data = {
         seats: gameObject.seats,
         turn: gameObject.turn,
-        phase: gameObject.phase
+        phase: gameObject.phase,
+        discard: gameObject.discard,
+        hand: objectify_cards(gameObject.hands[data.uid])
       };
       socket.write(JSON.stringify(output_data) + "\n");
     }

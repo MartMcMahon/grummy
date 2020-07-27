@@ -2,18 +2,19 @@ local json = require("json")
 local Object = require("classic")
 Button = require("button")
 Network = require("network")
-Card = require("card")
+Card = require("card") local layout = require("layout")
+
+local lg = love.graphics
 
 love.window.setMode(0, 0, nil)
-local screen_width = love.graphics.getWidth()
-local screen_height = love.graphics.getHeight()
+local screen_width = lg.getWidth()
+local screen_height = lg.getHeight()
 window_size = {
   x = math.min(screen_width/2, 1436),
   y = math.min(screen_height/2, 1025)
 }
 love.window.setMode(window_size.x, window_size.y)
 
-local lg = love.graphics
 
 local player = {}
 
@@ -40,6 +41,7 @@ end
 
 current_turn = nil
 phase = nil
+hand = {}
 mouse_is_over = nil
 
 buttons = {
@@ -59,11 +61,21 @@ function love:load()
   gameState = STATE.lobby
 
   selected = false
-  face_downs = {}
-  for i=1, 52 do
-    c = Card(1, 1, -100, -100, true)
-    c.sprite = lg.newImage("assets/cat_back.png")
-    table.insert(face_downs, c)
+
+  deck_stack = Card(1, 1, layout.deck_stack.x, layout.deck_stack.y, true)
+  deck_stack.sprite = lg.newImage("assets/cat_back.png")
+  discard = {
+    stack = {},
+  }
+  function discard.draw()
+    if #discard.stack > 0 then
+      for i,c in ipairs(discard.stack) do
+        c:draw()
+      end
+    else
+      lg.setColor(0.2, 0.2, 0.9)
+      lg.rectangle("line", layout.discard_stack.x, layout.discard_stack.y, 40, 60)
+    end
   end
 
   -- ping the server and establish socket
@@ -76,8 +88,33 @@ function load_game()
     draw = Button(window_size.x/2, window_size.y - 80, 100, 50, "draw"),
     discard = Button(window_size.x - 200, window_size.y - 80, 200, 50, "discard")
   }
+  function buttons.draw.click()
+    if draw_selected then
+
+    end
+  end
+
   gameState = STATE.game
   is_synced = false
+end
+
+function build_game_state(ob)
+  current_turn = ob.turn
+  phase = ob.phase
+  if ob.seat then
+    player.seat = ob.seat
+  end
+
+  for i = 1, #ob.discard, 1 do
+    c = ob.discard[i]
+    table.insert(discard.stack, Card(c.s+1, c.v+1, layout.discard_stack.x, layout.discard_stack.y + 30*(#ob.discard - i)))
+  end
+
+  for i = 1, #ob.hand, 1 do
+    c = ob.hand[i]
+    table.insert(hand, Card(c.s+1, c.v+1, layout.hand.x + i*card_size.w/2, layout.hand.y))
+  end
+
 end
 
 function love.update(dt)
@@ -88,9 +125,18 @@ function love.update(dt)
     data_age = 0
   elseif gameState == STATE.game and data_age >= 1 then
     res = network:sync()
-    current_turn = res.turn
-    phase = res.phase
-    player.seat = 0
+    -- for i,x in pairs(res) do
+    --   print(i, x)
+    -- end
+    -- print(res)
+    for i,x in ipairs(res.hand) do
+      print(i,x)
+      for j,y in pairs(x) do
+        print(j,y)
+      end
+    end
+    build_game_state(res)
+
     data_age = 0
   end
 
@@ -112,6 +158,18 @@ function love.update(dt)
     if card:mouse_in_bounds(x, y) and mouse_is_over == false then
       card.highlight = true
       mouse_is_over = card
+    else
+      card.highlight = false
+    end
+  end
+
+  for i = 1, #discard.stack, 1 do
+  -- for i = #discard.stack, 1, -1 do
+    local card = discard.stack[i]
+    if card:mouse_in_bounds(x, y) then
+      mouse_is_over = card
+      card.highlight = true
+      break
     else
       card.highlight = false
     end
@@ -170,15 +228,17 @@ function love.draw()
   elseif gameState == STATE.game then
 
     -- deck in center
-    face_downs[1].x = window_size.x/2
-    face_downs[1].y = window_size.y/2
-    face_downs[1]:draw()
+    deck_stack:draw()
+    discard:draw()
 
     -- cards in hand
-    for i=1,5 do
-      cards[i].x = i * card_size.w/2
-      cards[i].y = window_size.y - card_size.h
-      cards[i]:draw()
+    for i = #hand, 1, -1 do
+    -- for i=1,5 do
+      card = hand[i]
+      card:draw()
+      -- cards[i].x = i * card_size.w/2
+      -- cards[i].y = window_size.y - card_size.h
+      -- cards[i]:draw()
     end
 
     if current_turn == player.seat then

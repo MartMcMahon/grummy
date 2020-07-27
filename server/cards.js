@@ -1,5 +1,6 @@
-class Card {
+class Card extends Object {
   constructor(suit, value) {
+    super();
     if (value===undefined) {
       if (Array.isArray(suit)) {
         this.suit = suit[0];

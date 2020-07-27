@@ -34,7 +34,7 @@ local function getSprite(s, v)
 end
 
 function Card:new(s, v, x, y, is_face_down)
-  self.is_face_down = is_face_down or false
+  -- self.is_face_down = is_face_down or false
 
   self.s = s
   self.v = v
