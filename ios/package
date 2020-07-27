@@ -1,2 +1,1 @@
-game_files="main.lua"
-zip -9 -r game.love "$game_files"
+zip -9 -r game.love assets $(ls *.lua)

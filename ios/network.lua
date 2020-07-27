@@ -14,7 +14,8 @@ local socket = require("socket")
 Network = Object.extend(Object)
 
 function Network:new()
-  self.url = "localhost"
+  -- self.url = "localhost"
+  self.url = "grummy.mart.pizza"
   self.port = 6969
   self.tcp = nil
 end
