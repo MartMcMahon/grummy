@@ -5,13 +5,18 @@ const net = require("net");
 
 let sockets = [];
 let server = net.createServer();
+let { Card, Deck, Discard } = require("./cards");
 
 class GameObject {
   constructor() {
     this.id = Date.now().toString();
     this.players = {};
+    this.hands = {};
     this.seats = ["", "", "", ""];
     this.turn = 0;
+    this.deck = new Deck();
+    this.deck.shuffle();
+    this.discard = new Discard();
   }
 
   testMode() {
@@ -20,21 +25,14 @@ class GameObject {
     this.phase = 1;
     this.hands = {
       "20": [
-        { s: 1, v: 2 },
-        { s: 2, v: 2 },
-        { s: 3, v: 2 },
-        { s: 4, v: 2 },
-        { s: 3, v: 11 }
+        this.deck.draw(),
+        this.deck.draw(),
+        this.deck.draw(),
+        this.deck.draw(),
+        this.deck.draw()
       ],
-      "69": [
-        { s: 1, v: 6 },
-        { s: 1, v: 5 },
-        { s: 1, v: 9 }
-      ],
-      "420": [
-        { s: 3, v: 3 },
-        { s: 2, v: 10 }
-      ],
+      "69": [this.deck.draw(), this.deck.draw(), this.deck.draw()],
+      "420": [this.deck.draw(), this.deck.draw()],
       "666": []
     };
     this.played = [];
@@ -49,6 +47,10 @@ class GameObject {
     } else {
       console.log(uid + " is just watching.");
     }
+  }
+
+  deal_card(uid) {
+
   }
 }
 
@@ -93,13 +95,11 @@ server.on("connection", socket => {
       }
 
       let output_data = {
-          seats: gameObject.seats,
-          turn: gameObject.turn,
-          phase: gameObject.phase
-        };
-      socket.write(
-        JSON.stringify(output_data) + "\n"
-      );
+        seats: gameObject.seats,
+        turn: gameObject.turn,
+        phase: gameObject.phase
+      };
+      socket.write(JSON.stringify(output_data) + "\n");
     }
   });
 

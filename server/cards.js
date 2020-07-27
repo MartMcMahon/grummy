@@ -1,5 +1,4 @@
 class Card {
-
   constructor(suit, value) {
     if (value===undefined) {
       if (Array.isArray(suit)) {
@@ -25,9 +24,8 @@ class Card {
     return `the ${val} of ${SUITS[this.suit]}`;
   }
 }
-exports.Card = Card;
 
-exports.Deck = class Deck extends Array {
+class Deck extends Array {
   constructor() {
     super();
     for (let s = 0; s < 4; s += 1) {
@@ -47,7 +45,6 @@ exports.Deck = class Deck extends Array {
       this[m] = this[i];
       this[i] = t;
     }
-
     return this;
   }
 
@@ -62,3 +59,13 @@ exports.Deck = class Deck extends Array {
     };
   }
 }
+
+class Discard extends Array {
+  draw(n) {
+    return this.splice(0, n);
+  }
+}
+
+exports.Card = Card;
+exports.Deck = Deck;
+exports.Discard = Discard;
