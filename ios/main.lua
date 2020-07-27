@@ -40,6 +40,7 @@ end
 
 current_turn = nil
 phase = nil
+mouse_is_over = nil
 
 buttons = {
   connect = Button(window_size.x/2, window_size.y/2, 100, 50, "connect")
@@ -105,17 +106,16 @@ function love.update(dt)
   end
 
   -- reversed to pick top cards first
-  local highlight_found = false
+  mouse_is_over = false
   for i = #cards, 1, -1 do
     local card = cards[i]
-    if card:mouse_in_bounds(x, y) and highlight_found == false then
+    if card:mouse_in_bounds(x, y) and mouse_is_over == false then
       card.highlight = true
-      highlight_found = true
+      mouse_is_over = card
     else
       card.highlight = false
     end
   end
-
 
   if gameState == STATE.game then
     -- TODO actually check turn
@@ -151,26 +151,11 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
   end
 
-  for i,card in ipairs(cards) do
-    if card:mouse_in_bounds(x, y) and not selected then
-      print(card:toString())
-      card.is_selected = true
-      selected = card
-      break
-    end
+  if mouse_is_over then
+    mouse_is_over:click()
   end
-end
 
-function love.mousereleased(x, y, button, istouch, presses)
-  if selected then
-    selected.is_selected = false
-    selected = false
-  end
 end
-
--- function love.touchpressed(id, x, y, dx, dy, pressure)
---   print(string.format("touch at (%s, %s)", x, y))
--- end
 
 function love.keypressed(k)
   if k == 'escape' then
@@ -233,13 +218,6 @@ function love.draw()
     end
   end
 
-  -- for x=0, 10, 2 do
-  --   if face_downs[1] then
-  --     face_downs[1].x = x
-  --     face_downs[1].y = 10
-  --     face_downs[1]:draw()
-  --   end
-  -- end
 end
 
 area = {x=0, y=0, w=window_size.x, h=window_size.y/2}

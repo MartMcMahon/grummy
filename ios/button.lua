@@ -8,6 +8,7 @@ function Button:new(x, y, w, h, text)
   self.w = w
   self.h = h
   self.text = text
+  self.selected = false
 
   -- colors
   self.normal = {0.3, 0.65, 1, 0.6}
@@ -43,6 +44,7 @@ end
 
 function Button:click()
   print("clicked")
+  self.selected = not self.selected
 end
 
 function Button:draw()

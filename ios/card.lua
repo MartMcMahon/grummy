@@ -46,13 +46,13 @@ function Card:new(s, v, x, y, is_face_down)
   self.h = 84
 
   self.highlight = false
-  self.is_selected = false
+  self.selected = false
 end
 
 function Card:update(dt, x, y)
-  if self.is_selected then
-    self.x = x - self.w/2
-    self.y = y - self.h/2
+  if self.selected then
+    -- self.x = x - self.w/2
+    -- self.y = y - self.h/2
   end
 end
 
@@ -67,9 +67,17 @@ function Card:mouse_in_bounds(mouse_x, mouse_y)
   end
 end
 
+function Card:click()
+  self.selected = not self.selected
+end
+
 function Card:draw()
   if self.highlight then
     lg.setColor(0.196, 1, 0.7373)
+    lg.rectangle("fill", self.x - 2, self.y - 2, self.w + 4, self.h + 4)
+  end
+  if self.selected then
+    lg.setColor(0.55, 0.22, 0.22)
     lg.rectangle("fill", self.x - 2, self.y - 2, self.w + 4, self.h + 4)
   end
   lg.setColor(1, 1, 1, 1)
